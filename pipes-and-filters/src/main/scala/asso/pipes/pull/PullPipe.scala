@@ -1,5 +1,7 @@
 package asso.pipes.pull
 
+import asso.pipes.{Eof, NotNone, Value}
+
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
