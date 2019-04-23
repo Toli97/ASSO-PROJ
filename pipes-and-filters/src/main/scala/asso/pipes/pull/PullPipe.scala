@@ -5,7 +5,7 @@ import asso.pipes.{Eof, NotNone, Value}
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class PullPipe[A](source: MessageProducer[A]) {
+class PullPipe[A](private val source: MessageProducer[A]) {
 
   def pull: Future[NotNone[A]] = for {
     msg <- source.produce if msg.isNotNone(msg)

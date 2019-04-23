@@ -3,7 +3,7 @@ package asso.pipes.pull.numbers
 import java.io.{FileInputStream, InputStream, PrintStream}
 import java.util.Scanner
 
-import asso.pipes.pull.MessageProducer
+import asso.pipes.pull.{EndNode, MessageProducer, SourceNode}
 import asso.pipes.{Eof, NotNone, Value}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -12,16 +12,16 @@ import scala.concurrent.{Await, Future, blocking}
 import scala.util.control.Breaks._
 
 object ProducerConsumerFactory {
-  def producerFromFile(filepath: String): LongProducer = new LongProducer(new FileInputStream(filepath))
+  def producerFromFile(filepath: String): SourceNode[Long] = new LongProducer(new FileInputStream(filepath))
 
-  def consumerToFile(filepath: String, messageProducer: MessageProducer[Long]): LongConsumer = new LongConsumer(new PrintStream(filepath), messageProducer)
+  def consumerToFile(filepath: String, messageProducer: MessageProducer[Long]): EndNode[Long] = new LongConsumer(new PrintStream(filepath), messageProducer)
 
-  def producerFromConsole(): LongProducer = new LongProducer(System.in)
+  def producerFromConsole(): SourceNode[Long] = new LongProducer(System.in)
 
-  def consumerToConsole(messageProducer: MessageProducer[Long]): LongConsumer = new LongConsumer(System.out, messageProducer)
+  def consumerToConsole(messageProducer: MessageProducer[Long]): EndNode[Long] = new LongConsumer(System.out, messageProducer)
 }
 
-class LongProducer(is: InputStream) extends MessageProducer[Long] {
+class LongProducer(private val is: InputStream) extends SourceNode[Long] {
   private val scanner = new Scanner(is)
 
   override def produce: Future[NotNone[Long]] = Future {
@@ -35,11 +35,11 @@ class LongProducer(is: InputStream) extends MessageProducer[Long] {
   }
 }
 
-class LongConsumer(printer: PrintStream, messageProducer: MessageProducer[Long]) {
+class LongConsumer(private val printer: PrintStream, private val messageProducer: MessageProducer[Long]) extends EndNode[Long] {
 
   private def getValue = Await.result(messageProducer.produce, 5.second)
 
-  def consumeAll = {
+  override def consumeAll = {
     // TODO make loop scala like
     breakable {
       while (true) {
