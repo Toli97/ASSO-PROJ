@@ -5,16 +5,12 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 class PullPipe[A](source: MessageProducer[A]) {
 
-  private def isNotNone(msg: Message[A]): Boolean = msg match {
-    case NoValue() => false
-    case _ => true
-  }
-
   def pull: Future[NotNone[A]] = for {
-    msg <- source.produce if isNotNone(msg)
+    msg <- source.produce if msg.isNotNone(msg)
   } yield msg match {
     case Value(value) => Value(value)
-    case EndOfInput() => EndOfInput()
+    case Eof() => Eof()
+    case _ => throw new IllegalStateException("Shouldn't match NoValue")
   }
 
 }
