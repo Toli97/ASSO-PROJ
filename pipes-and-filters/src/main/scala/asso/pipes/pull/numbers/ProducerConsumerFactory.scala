@@ -1,0 +1,53 @@
+package asso.pipes.pull.numbers
+
+import java.io.{FileInputStream, InputStream, PrintStream}
+import java.util.Scanner
+
+import asso.pipes.pull.MessageProducer
+import asso.pipes.{Eof, NotNone, Value}
+
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration._
+import scala.concurrent.{Await, Future, blocking}
+import scala.util.control.Breaks._
+
+object ProducerConsumerFactory {
+  def producerFromFile(filepath: String): LongProducer = new LongProducer(new FileInputStream(filepath))
+
+  def consumerToFile(filepath: String, messageProducer: MessageProducer[Long]): LongConsumer = new LongConsumer(new PrintStream(filepath), messageProducer)
+
+  def producerFromConsole(): LongProducer = new LongProducer(System.in)
+
+  def consumerToConsole(messageProducer: MessageProducer[Long]): LongConsumer = new LongConsumer(System.out, messageProducer)
+}
+
+class LongProducer(is: InputStream) extends MessageProducer[Long] {
+  private val scanner = new Scanner(is)
+
+  override def produce: Future[NotNone[Long]] = Future {
+    blocking { // TODO is this correct
+      if (scanner.hasNext()) {
+        Value(scanner.next())
+      } else {
+        Eof()
+      }
+    }
+  }
+}
+
+class LongConsumer(printer: PrintStream, messageProducer: MessageProducer[Long]) {
+
+  private def getValue = Await.result(messageProducer.produce, 5.second)
+
+  def consumeAll = {
+    // TODO make loop scala like
+    breakable {
+      while (true) {
+        getValue match {
+          case Value(value) => printer.println(value)
+          case Eof() => break
+        }
+      }
+    }
+  }
+}
