@@ -12,7 +12,7 @@ trait MessageProducer[A] {
 trait SourceNode[A] extends MessageProducer[A]
 
 trait EndNode[A] {
-  def consumeAll: Unit
+  def consumeAll(): Unit
 }
 
 class SimpleFilter[In, Out](private val source: PullPipe[In], private val operation: In => Optional[Out]) extends MessageProducer[Out] {

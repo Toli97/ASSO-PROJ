@@ -7,15 +7,8 @@ object LongOperations {
     else
       NoValue()
 
-  private def isPrime(num: Long): Boolean = {
-    if (num <= 1)
-      false
-    else if (num == 2)
-      true
-    else
-      !(2 to (num - 1)).exists(x => num % x == 0)
-  }
+  private def isPrime(num: Int): Boolean = (num > 1) && !(2 to scala.math.sqrt(num).toInt).exists(x =>num % x == 0)
 
   def primeFilter(number: Long): Optional[Long] =
-    if (isPrime(number)) Value(number) else NoValue()
+    if (isPrime(number.toInt)) Value(number) else NoValue()
 }

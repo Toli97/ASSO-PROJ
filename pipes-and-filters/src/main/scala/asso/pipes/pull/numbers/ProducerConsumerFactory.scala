@@ -3,8 +3,8 @@ package asso.pipes.pull.numbers
 import java.io.{FileInputStream, InputStream, PrintStream}
 import java.util.Scanner
 
-import asso.pipes.pull.{EndNode, MessageProducer, SourceNode}
-import asso.pipes.{Eof, NotNone, Value}
+import asso.pipes.pull.{EndNode, MessageProducer, PullPipe, SourceNode}
+import asso.pipes.{Eof, NoValue, NotNone, Value}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
@@ -14,11 +14,11 @@ import scala.util.control.Breaks._
 object ProducerConsumerFactory {
   def producerFromFile(filepath: String): SourceNode[Long] = new LongProducer(new FileInputStream(filepath))
 
-  def consumerToFile(filepath: String, messageProducer: MessageProducer[Long]): EndNode[Long] = new LongConsumer(new PrintStream(filepath), messageProducer)
-
   def producerFromConsole(): SourceNode[Long] = new LongProducer(System.in)
 
-  def consumerToConsole(messageProducer: MessageProducer[Long]): EndNode[Long] = new LongConsumer(System.out, messageProducer)
+  def consumerToFile(filepath: String, messageProducer: MessageProducer[Long]): PullPipe[Long] => EndNode[Long] = messageProducer => new LongConsumer(new PrintStream(filepath), messageProducer)
+
+  def consumerToConsole(messageProducer: MessageProducer[Long]): PullPipe[Long] => EndNode[Long] = messageProducer => new LongConsumer(System.out, messageProducer)
 }
 
 class LongProducer(private val is: InputStream) extends SourceNode[Long] {
@@ -27,7 +27,7 @@ class LongProducer(private val is: InputStream) extends SourceNode[Long] {
   override def produce: Future[NotNone[Long]] = Future {
     blocking { // TODO is this correct
       if (scanner.hasNext()) {
-        Value(scanner.next())
+        Value(scanner.next().toLong)
       } else {
         Eof()
       }
@@ -35,11 +35,11 @@ class LongProducer(private val is: InputStream) extends SourceNode[Long] {
   }
 }
 
-class LongConsumer(private val printer: PrintStream, private val messageProducer: MessageProducer[Long]) extends EndNode[Long] {
+class LongConsumer(private val printer: PrintStream, private val pipe: PullPipe[Long]) extends EndNode[Long] {
 
-  private def getValue = Await.result(messageProducer.produce, 5.second)
+  private def getValue = Await.result(pipe.pull, 5.second)
 
-  override def consumeAll = {
+  override def consumeAll() = {
     // TODO make loop scala like
     breakable {
       while (true) {

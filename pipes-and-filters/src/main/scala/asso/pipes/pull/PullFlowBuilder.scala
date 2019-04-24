@@ -1,20 +1,28 @@
 package asso.pipes.pull
 
+import java.io.PrintStream
+
 import asso.pipes.Optional
 
 class PullFlowBuilder[In] private (private val source: MessageProducer[In]) {
 
+  private def sourcePipe = new PullPipe(source)
+
   def withSimpleFilter[Out](operation: In => Optional[Out]): PullFlowBuilder[Out] = {
-    val pipe = new PullPipe(source)
+    val pipe = sourcePipe
     val filter = new SimpleFilter(pipe, operation)
     new PullFlowBuilder(filter)
   }
 
   def withJoinFilter[In2, Out](pullFlowBuilder: PullFlowBuilder[In2], operation: (In, In2) => Optional[Out]) : PullFlowBuilder[Out] = {
-    val pipe1 = new PullPipe(source)
+    val pipe1 = sourcePipe
     val pipe2 = new PullPipe(pullFlowBuilder.source)
     val filter = new JoinFilter(pipe1, pipe2, operation)
     new PullFlowBuilder[Out](filter)
+  }
+
+  def buildJob(nodeBuilder: PullPipe[In] => EndNode[In]): () => Unit = {
+    () => nodeBuilder(sourcePipe).consumeAll()
   }
 }
 
