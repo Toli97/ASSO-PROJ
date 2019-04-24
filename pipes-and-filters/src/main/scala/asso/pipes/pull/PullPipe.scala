@@ -1,18 +1,18 @@
 package asso.pipes.pull
 
-import asso.pipes.{Eof, NotNone, Value}
+import asso.pipes.{Eof, NoValue, NotNone, Value}
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.duration._
+import scala.concurrent.{Await, Future, blocking}
 
-class PullPipe[A](private val source: MessageProducer[A]) {
+class PullPipe[A](source: MessageProducer[A]) {
+  private val Duration = 30.second
 
-  def pull: Future[NotNone[A]] = for {
-    msg <- source.produce if msg.isNotNone(msg)
-  } yield msg match {
-    case Value(value) => Value(value)
-    case Eof() => Eof()
-    case _ => throw new IllegalStateException("Shouldn't match NoValue")
+  def pull(): Future[NotNone[A]] = blocking {
+    Await.result(source.produce, Duration) match {
+      case NoValue() => pull()
+      case Value(v) => Future.successful(Value(v))
+      case Eof() => Future.successful(Eof())
+    }
   }
-
 }

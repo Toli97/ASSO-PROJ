@@ -3,7 +3,7 @@ package asso.pipes.pull.numbers
 import java.io.{FileInputStream, InputStream, PrintStream}
 import java.util.Scanner
 
-import asso.pipes.pull.{EndNode, MessageProducer, PullPipe, SourceNode}
+import asso.pipes.pull.{EndNode, PullPipe, SourceNode}
 import asso.pipes.{Eof, NotNone, Value}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -16,9 +16,9 @@ object ProducerConsumerFactory {
 
   def producerFromConsole(): SourceNode[Long] = new LongProducer(System.in)
 
-  def consumerToFile(filepath: String, messageProducer: MessageProducer[Long]): PullPipe[Long] => EndNode[Long] = messageProducer => new LongConsumer(new PrintStream(filepath), messageProducer)
+  def consumerToFile(filepath: String): PullPipe[Long] => EndNode[Long] = messageProducer => new LongConsumer(new PrintStream(filepath), messageProducer)
 
-  def consumerToConsole(messageProducer: MessageProducer[Long]): PullPipe[Long] => EndNode[Long] = messageProducer => new LongConsumer(System.out, messageProducer)
+  def consumerToConsole(): PullPipe[Long] => EndNode[Long] = messageProducer => new LongConsumer(System.out, messageProducer)
 }
 
 class LongProducer(private val is: InputStream) extends SourceNode[Long] {
@@ -35,9 +35,12 @@ class LongProducer(private val is: InputStream) extends SourceNode[Long] {
   }
 }
 
+
 class LongConsumer(private val printer: PrintStream, private val pipe: PullPipe[Long]) extends EndNode[Long] {
 
-  private def getValue = Await.result(pipe.pull, 5.second)
+  private val Duration = 30.second
+
+  private def getValue = Await.result(pipe.pull, Duration)
 
   override def consumeAll() = {
     // TODO make loop scala like

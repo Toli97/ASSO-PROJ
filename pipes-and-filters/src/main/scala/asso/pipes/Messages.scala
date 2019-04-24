@@ -1,7 +1,7 @@
 package asso.pipes
 
 sealed trait Message[A] {
-  def isNotNone(msg: Message[A]): Boolean = msg.isInstanceOf[NotNone[A]]
+  def isNotNone(): Boolean = this.isInstanceOf[NotNone[A]]
 }
 
 trait Optional[A] extends Message[A] // either has a value or no value
