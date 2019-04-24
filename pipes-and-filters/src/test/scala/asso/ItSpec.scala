@@ -1,7 +1,6 @@
 package asso
 
-import java.io.{File, FileInputStream, PrintWriter}
-import java.util.Scanner
+import java.io.{File, PrintWriter}
 
 import org.scalatest._
 

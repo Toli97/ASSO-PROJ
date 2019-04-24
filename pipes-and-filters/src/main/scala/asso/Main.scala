@@ -1,9 +1,5 @@
 package asso
 
-import asso.pipes.LongOperations
-import asso.pipes.pull.PullFlowBuilder
-import asso.pipes.pull.numbers.ProducerConsumerFactory
-
 object Main {
   def main(args: Array[String]): Unit = {
     if (args.length == 0) {
