@@ -1,7 +1,7 @@
 package asso
 
 import asso.pipes.LongOperations
-import asso.pipes.pull.{PullFlowBuilder, PullJobFactory}
+import asso.pipes.pull.PullFlowBuilder
 import asso.pipes.pull.numbers.ProducerConsumerFactory
 
 object Main {

@@ -16,9 +16,9 @@ object ProducerConsumerFactory {
 
   def producerFromConsole(): SourceNode[Long] = new LongProducer(System.in)
 
-  def consumerToFile(filepath: String): PullPipe[Long] => EndNode[Long] = messageProducer => new LongConsumer(new PrintStream(filepath), messageProducer)
+  def consumerToFile(filepath: String)(messageProducer: PullPipe[Long]):  EndNode[Long] = new LongConsumer(new PrintStream(filepath), messageProducer)
 
-  def consumerToConsole(): PullPipe[Long] => EndNode[Long] = messageProducer => new LongConsumer(System.out, messageProducer)
+  def consumerToConsole(messageProducer: PullPipe[Long]): EndNode[Long] = new LongConsumer(System.out, messageProducer)
 }
 
 class LongProducer(private val is: InputStream) extends SourceNode[Long] {

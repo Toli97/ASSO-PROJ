@@ -1,13 +1,14 @@
-package asso.pipes.pull
+package asso
 
-import asso.pipes.{LongOperations, Value}
+import asso.pipes.pull.PullFlowBuilder
 import asso.pipes.pull.numbers.ProducerConsumerFactory
+import asso.pipes.{LongOperations, Value}
 
 object PullJobFactory {
   def buildConsoleJob(): () => Unit = {
     PullFlowBuilder.build(ProducerConsumerFactory.producerFromConsole())
       .withSimpleFilter(num => LongOperations.isMultipleFilter(num, 2))
-      .buildJob(ProducerConsumerFactory.consumerToConsole())
+      .buildJob(ProducerConsumerFactory.consumerToConsole)
   }
 
   def buildAlgorithm(outPath: String, inPath1: String, inPath2: String): () => Unit = {
