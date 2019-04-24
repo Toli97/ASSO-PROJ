@@ -2,8 +2,8 @@ package asso.pipes.pull
 
 import asso.pipes.{Eof, Message, Optional, Value}
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 trait MessageProducer[A] {
   def produce: Future[Message[A]]

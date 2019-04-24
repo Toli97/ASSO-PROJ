@@ -1,7 +1,5 @@
 package asso.pipes.pull
 
-import java.io.PrintStream
-
 import asso.pipes.Optional
 
 class PullFlowBuilder[In] private (private val source: MessageProducer[In]) {
@@ -21,9 +19,8 @@ class PullFlowBuilder[In] private (private val source: MessageProducer[In]) {
     new PullFlowBuilder[Out](filter)
   }
 
-  def buildJob(nodeBuilder: PullPipe[In] => EndNode[In]): () => Unit = {
-    () => nodeBuilder(sourcePipe).consumeAll()
-  }
+  def buildJob(nodeBuilder: PullPipe[In] => EndNode[In]): () => Unit = nodeBuilder(sourcePipe).consumeAll
+
 }
 
 object PullFlowBuilder {

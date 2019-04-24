@@ -4,7 +4,7 @@ import java.io.{FileInputStream, InputStream, PrintStream}
 import java.util.Scanner
 
 import asso.pipes.pull.{EndNode, MessageProducer, PullPipe, SourceNode}
-import asso.pipes.{Eof, NoValue, NotNone, Value}
+import asso.pipes.{Eof, NotNone, Value}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
