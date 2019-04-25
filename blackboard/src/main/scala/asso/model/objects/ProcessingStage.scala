@@ -1,5 +1,9 @@
 package asso.model.objects
 
+/**
+  * Processing Stage of each object.
+  * KnowledgeSources use the ProcessingStage to determine if they should act on each object
+  */
 trait ProcessingStage
 
 case class ToFilterMultiples() extends ProcessingStage

@@ -22,5 +22,5 @@ class FibonacciGeneratorTest extends org.scalatest.FunSuite {
     assert(blackboard.objects(10).value === 55)
     assert(blackboard.objects(69).value === 117669030460994L)
   }
-  
+
 }

@@ -5,7 +5,7 @@ import asso.model.objects.ProcessingStage
 
 import scala.concurrent.{ExecutionContext, Future}
 
-abstract class KnowledgeSource(blackboard: Blackboard, nextState: ProcessingStage) {
+abstract class KnowledgeSource(blackboard: Blackboard, nextStage: ProcessingStage) {
 
   implicit val ec: ExecutionContext = ExecutionContext.global
 

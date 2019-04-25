@@ -5,6 +5,10 @@ import asso.model.knowledgeSources.KnowledgeSource
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, ExecutionContext, Future}
 
+/**
+  * Controls the knowledge sources that act on the blackboard
+  * @param blackboard
+  */
 class Controller(blackboard: Blackboard) {
   implicit val ec: ExecutionContext = ExecutionContext.global
 

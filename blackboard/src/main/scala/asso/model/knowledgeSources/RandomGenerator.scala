@@ -6,7 +6,7 @@ import asso.model.objects.{LongWrapper, ProcessingStage}
 import scala.concurrent.Future
 import scala.util.Random
 
-case class RandomGenerator(blackboard: Blackboard, nextState: ProcessingStage) extends KnowledgeSource(blackboard = blackboard, nextState = nextState) {
+case class RandomGenerator(blackboard: Blackboard, nextState: ProcessingStage) extends KnowledgeSource(blackboard = blackboard, nextStage = nextState) {
 
   var counter = 10000;
   var keepGoing = true
