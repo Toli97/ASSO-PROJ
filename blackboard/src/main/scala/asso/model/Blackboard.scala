@@ -1,9 +1,13 @@
 package asso.model
 
-import asso.model.objects.IntWrapper
+import asso.model.objects.LongWrapper
+
+import scala.collection.mutable.ListBuffer
 
 class Blackboard {
-  var objects: List[IntWrapper] = List.empty
+  var objects: ListBuffer[LongWrapper] = ListBuffer.empty
 
-  def addObject(o: IntWrapper) = o :: objects
+  def addObject(o: LongWrapper) = {
+    objects += o
+  }
 }

@@ -1,7 +1,7 @@
 package asso.model.knowledgeSources
 
 import asso.model.Blackboard
-import asso.model.objects.{IntWrapper, ProcessingStage}
+import asso.model.objects.{LongWrapper, ProcessingStage}
 
 import scala.concurrent.Future
 import scala.util.Random
@@ -18,7 +18,7 @@ case class RandomGenerator(blackboard: Blackboard, nextState: ProcessingStage) e
     keepGoing = true
     while(isEnabled && keepGoing) {
       val rnd = randomGenerator.nextInt()
-      blackboard.addObject(new IntWrapper(rnd, nextState))
+      blackboard.addObject(new LongWrapper(rnd, nextState))
       counter-=1
     }
   }

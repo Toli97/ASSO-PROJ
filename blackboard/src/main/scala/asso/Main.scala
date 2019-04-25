@@ -4,6 +4,9 @@ import asso.model.knowledgeSources.{FibonacciGenerator, RandomGenerator}
 import asso.model.objects.{ToFilterMultiples, ToSub1}
 import asso.model.{Blackboard, Controller}
 
+import scala.concurrent.Await
+import scala.concurrent.duration.Duration
+
 
 object Main extends App{
 
@@ -27,5 +30,6 @@ object Main extends App{
     controller.addKnowledgeSource(inputGenerator2)
     controller.addKnowledgeSource(inputGenerator3)
     controller.addKnowledgeSource(inputGenerator4)
+    Await.result(controller.execute(), Duration.Inf)
   }
 }
