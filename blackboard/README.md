@@ -2,6 +2,8 @@
 
 Project to implement the algorithm with blackboard
 
+![Blackboard](https://imgur.com/7PTReP2)
+
 ## Instructions
 
 You need to have `sbt` installed to run these steps
