@@ -2,7 +2,7 @@
 
 Project to implement the algorithm with blackboard
 
-![Blackboard](https://imgur.com/7PTReP2)
+![Blackboard](https://i.imgur.com/7PTReP2.png)
 
 ## Instructions
 
