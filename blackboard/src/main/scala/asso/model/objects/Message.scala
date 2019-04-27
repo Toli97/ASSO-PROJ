@@ -1,7 +1,8 @@
 package asso.model.objects
 
-class LongWrapper(var value: Long, val stageChain: Vector[ProcessingStage]) {
-  private var currentStageIdx: Int = 0
+
+abstract class Message[I](val stageChain: Vector[ProcessingStage]) {
+  var currentStageIdx: Int = 0
 
   def getCurrentStage(): ProcessingStage = {
     return stageChain(currentStageIdx)
@@ -19,5 +20,9 @@ class LongWrapper(var value: Long, val stageChain: Vector[ProcessingStage]) {
     }
   }
 }
+
+case class Value[I](var value: I, chain: Vector[ProcessingStage]) extends Message[I](chain)
+
+case class Eof[I](chain: Vector[ProcessingStage]) extends Message[I](chain)
 
 

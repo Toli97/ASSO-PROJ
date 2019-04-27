@@ -1,7 +1,7 @@
 package asso.model.knowledgeSources.generators
 
 import asso.model.Blackboard
-import asso.model.objects.{LongWrapper, ProcessingStage}
+import asso.model.objects.{Value, ProcessingStage}
 
 import scala.concurrent.Future
 
@@ -11,7 +11,7 @@ import scala.concurrent.Future
   * @param blackboard Where to put the objects produced
   * @param chain All the stages that the objects produced should go through
   */
-case class FibonacciGenerator(blackboard: Blackboard, chain: Vector[ProcessingStage]) extends Generator(blackboard, chain) {
+case class FibonacciGenerator(blackboard: Blackboard[Long], chain: Vector[ProcessingStage]) extends Generator(blackboard, chain) {
   val numbersToGenerate = 70
   var counter = 0
   var last: Long = 0
@@ -26,7 +26,7 @@ case class FibonacciGenerator(blackboard: Blackboard, chain: Vector[ProcessingSt
       var nextLong: Long = 0
       if (counter > 1) nextLong = last + lastButOne
       else if (counter == 1) nextLong = 1
-      blackboard.addToQueue(new LongWrapper(nextLong, chain))
+      blackboard.addToQueue(new Value(nextLong, chain))
       lastButOne = last
       last = nextLong
       counter += 1

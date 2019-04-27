@@ -10,7 +10,7 @@ import scala.concurrent.{Await, ExecutionContext, Future}
   * Controls the knowledge sources that act on the blackboard
   * @param blackboard
   */
-class Controller(blackboard: Blackboard) {
+class Controller[I](blackboard: Blackboard[I]) {
   implicit val ec: ExecutionContext = ExecutionContext.global
   val timer = new java.util.Timer()
   val task = new java.util.TimerTask {
@@ -18,9 +18,9 @@ class Controller(blackboard: Blackboard) {
   }
   timer.schedule(task, 1000L, 1000L)
 
-  var knowledgeSources: ListBuffer[KnowledgeSource] = ListBuffer.empty
+  var knowledgeSources: ListBuffer[KnowledgeSource[I]] = ListBuffer.empty
 
-  def addKnowledgeSource(src: KnowledgeSource) = {
+  def addKnowledgeSource(src: KnowledgeSource[I]) = {
     knowledgeSources += src
   }
 

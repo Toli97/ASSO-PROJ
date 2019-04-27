@@ -4,7 +4,7 @@ import asso.model.Blackboard
 
 import scala.concurrent.{ExecutionContext, Future}
 
-abstract class KnowledgeSource(blackboard: Blackboard) {
+abstract class KnowledgeSource[I](blackboard: Blackboard[I]) {
 
   implicit val ec: ExecutionContext = ExecutionContext.global
   var keepGoing = true

@@ -2,10 +2,10 @@ package asso.model.objects
 
 
 
-class LongWrapperTest extends org.scalatest.FunSuite {
-  test("LongWrapper.getNextStage") {
+class MessageTest extends org.scalatest.FunSuite {
+  test("Message.getNextStage") {
     val chain1: Vector[ProcessingStage] = Vector(ToFilterMultiples(), ToFilterPrime())
-    val o = new LongWrapper(10,chain1)
+    val o = new Value(10,chain1)
     assert(o.getCurrentStage() == ToFilterMultiples())
     assert(o.getNextStage() == ToFilterPrime())
     o.advanceStage()
