@@ -2,6 +2,7 @@ package asso.model
 
 import asso.model.knowledgeSources.KnowledgeSource
 
+import scala.collection.mutable.ListBuffer
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, ExecutionContext, Future}
 
@@ -11,26 +12,30 @@ import scala.concurrent.{Await, ExecutionContext, Future}
   */
 class Controller(blackboard: Blackboard) {
   implicit val ec: ExecutionContext = ExecutionContext.global
+  val timer = new java.util.Timer()
+  val task = new java.util.TimerTask {
+    def run() = execute()
+  }
+  timer.schedule(task, 1000L, 1000L)
 
-  var knowledgeSources: List[KnowledgeSource] = List.empty
+  var knowledgeSources: ListBuffer[KnowledgeSource] = ListBuffer.empty
 
   def addKnowledgeSource(src: KnowledgeSource) = {
-    knowledgeSources = src :: knowledgeSources
+    knowledgeSources += src
   }
+
 
   def execute(): Future[Unit] = Future {
     println("Executing controller")
-    println("Knowledge sources length: " + knowledgeSources.length)
     var futures: List[Future[Unit]] = List.empty
     knowledgeSources.foreach(k => {
-      if (k.isEnabled()) {
-        futures = k.execute() :: futures
-      }
+      if (k.isEnabled()) futures = k.execute() :: futures
     })
     Await.result(Future.sequence(futures), Duration.Inf)
   }
 
   def stop() = {
+    task.cancel()
     knowledgeSources.foreach(k => k.stop())
   }
 }

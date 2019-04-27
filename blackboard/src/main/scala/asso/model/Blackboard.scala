@@ -1,13 +1,31 @@
 package asso.model
 
-import asso.model.objects.LongWrapper
+import java.util.concurrent.{ConcurrentHashMap, ConcurrentLinkedQueue}
 
-import scala.collection.mutable.ListBuffer
+import asso.model.objects.{LongWrapper, ProcessingStage}
 
 class Blackboard {
-  var objects: ListBuffer[LongWrapper] = ListBuffer.empty
 
-  def addObject(o: LongWrapper) = {
-    objects += o
+  var board: ConcurrentHashMap[ProcessingStage, ConcurrentLinkedQueue[LongWrapper]] = new ConcurrentHashMap[ProcessingStage, ConcurrentLinkedQueue[LongWrapper]]()
+
+  def addToQueue(element: LongWrapper): Unit = {
+    board.putIfAbsent(element.getCurrentStage(), new ConcurrentLinkedQueue[LongWrapper]())
+    board.get(element.getCurrentStage()).add(element)
+  }
+
+
+  def pollFromQueue(processingStage: ProcessingStage): LongWrapper = {
+    board.putIfAbsent(processingStage, new ConcurrentLinkedQueue[LongWrapper]())
+    return board.get(processingStage).poll()
+  }
+
+  def isQueueEmpty(processingStage: ProcessingStage): Boolean = {
+    board.putIfAbsent(processingStage, new ConcurrentLinkedQueue[LongWrapper]())
+    return board.get(processingStage).isEmpty()
+  }
+
+  def getQueue(processingStage: ProcessingStage): ConcurrentLinkedQueue[LongWrapper] = {
+    board.putIfAbsent(processingStage, new ConcurrentLinkedQueue[LongWrapper]())
+    return board.get(processingStage)
   }
 }

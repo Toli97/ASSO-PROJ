@@ -1,4 +1,4 @@
-package asso.model.knowledgeSources
+package asso.model.knowledgeSources.generators
 
 import asso.model.Blackboard
 import asso.model.objects.{LongWrapper, ProcessingStage}
@@ -6,10 +6,9 @@ import asso.model.objects.{LongWrapper, ProcessingStage}
 import scala.concurrent.Future
 import scala.util.Random
 
-case class RandomGenerator(blackboard: Blackboard, nextState: ProcessingStage) extends KnowledgeSource(blackboard = blackboard, nextStage = nextState) {
+case class RandomGenerator(blackboard: Blackboard, chain: Vector[ProcessingStage]) extends Generator(blackboard, chain) {
 
   var counter = 10000;
-  var keepGoing = true
 
   override def isEnabled: Boolean = counter > 0
   val randomGenerator = new Random()
@@ -18,10 +17,8 @@ case class RandomGenerator(blackboard: Blackboard, nextState: ProcessingStage) e
     keepGoing = true
     while(isEnabled && keepGoing) {
       val rnd = randomGenerator.nextInt()
-      blackboard.addObject(new LongWrapper(rnd, nextState))
+      blackboard.addToQueue(new LongWrapper(rnd, chain))
       counter-=1
     }
   }
-
-  override def stop(): Unit = keepGoing = false
 }

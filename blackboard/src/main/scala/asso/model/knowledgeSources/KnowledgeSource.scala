@@ -1,18 +1,18 @@
 package asso.model.knowledgeSources
 
 import asso.model.Blackboard
-import asso.model.objects.ProcessingStage
 
 import scala.concurrent.{ExecutionContext, Future}
 
-abstract class KnowledgeSource(blackboard: Blackboard, nextStage: ProcessingStage) {
+abstract class KnowledgeSource(blackboard: Blackboard) {
 
   implicit val ec: ExecutionContext = ExecutionContext.global
+  var keepGoing = true
 
   def isEnabled(): Boolean
 
   def execute(): Future[Unit]
 
-  def stop()
+  def stop() = keepGoing = false
 
 }
