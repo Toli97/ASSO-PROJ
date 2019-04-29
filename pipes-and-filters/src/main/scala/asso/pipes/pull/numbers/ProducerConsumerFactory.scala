@@ -6,22 +6,21 @@ import java.util.Scanner
 import asso.pipes.pull.{EndNode, PullPipe, SourceNode}
 import asso.pipes.{AssoValues, Eof, NotNone, Value}
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
-import scala.concurrent.{Await, Future, blocking}
+import scala.concurrent.{Await, ExecutionContext, Future, blocking}
 import scala.util.control.Breaks._
 
 object ProducerConsumerFactory {
-  def producerFromFile(filepath: String): SourceNode[Long] = new LongProducer(new FileInputStream(filepath))
+  def producerBuilderFromFile(filepath: String): ExecutionContext => SourceNode[Long] = ec => new LongProducer(new FileInputStream(filepath), ec)
 
-  def producerFromConsole(): SourceNode[Long] = new LongProducer(System.in)
+  def producerBuilderFromConsole(): ExecutionContext => SourceNode[Long] = ec => new LongProducer(System.in, ec)
 
   def consumerToFile(filepath: String)(messageProducer: PullPipe[Long]):  EndNode[Long] = new LongConsumer(new PrintStream(filepath), messageProducer, AssoValues.DefaultDuration)
 
   def consumerToConsole(messageProducer: PullPipe[Long]): EndNode[Long] = new LongConsumer(System.out, messageProducer, AssoValues.DefaultDuration)
 }
 
-class LongProducer(private val is: InputStream) extends SourceNode[Long] {
+class LongProducer(private val is: InputStream, implicit private val ec: ExecutionContext) extends SourceNode[Long] {
   private val scanner = new Scanner(is)
 
   override def produce: Future[NotNone[Long]] = Future {
