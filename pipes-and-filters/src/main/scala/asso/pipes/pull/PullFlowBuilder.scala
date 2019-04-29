@@ -1,10 +1,10 @@
 package asso.pipes.pull
 
-import asso.pipes.Optional
+import asso.pipes.{AssoValues, Optional}
 
 class PullFlowBuilder[In] private (private val source: MessageProducer[In]) {
 
-  private def sourcePipe = new PullPipe(source)
+  private def sourcePipe = new PullPipe(source, AssoValues.DefaultDuration)
 
   def withSimpleFilter[Out](operation: In => Optional[Out]): PullFlowBuilder[Out] = {
     val pipe = sourcePipe
@@ -14,7 +14,7 @@ class PullFlowBuilder[In] private (private val source: MessageProducer[In]) {
 
   def withJoinFilter[In2, Out](pullFlowBuilder: PullFlowBuilder[In2], operation: (In, In2) => Optional[Out]) : PullFlowBuilder[Out] = {
     val pipe1 = sourcePipe
-    val pipe2 = new PullPipe(pullFlowBuilder.source)
+    val pipe2 = new PullPipe(pullFlowBuilder.source, AssoValues.DefaultDuration)
     val filter = new JoinFilter(pipe1, pipe2, operation)
     new PullFlowBuilder[Out](filter)
   }
@@ -25,6 +25,8 @@ class PullFlowBuilder[In] private (private val source: MessageProducer[In]) {
 
 object PullFlowBuilder {
   def build[In](source: SourceNode[In]): PullFlowBuilder[In] = new PullFlowBuilder(source)
+
+
 }
 
 
