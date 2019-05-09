@@ -1,7 +1,20 @@
 package asso
 
 object Main {
-  def main(args: Array[String]): Unit = {
+
+  def Main(args: Array[String]): Unit = {
+    try {
+      TestableMain(args)
+      sys.exit(0)
+    } catch {
+      case e: Throwable => {
+        System.err.println(e.getMessage)
+        sys.exit(1)
+      }
+    }
+  }
+
+  def TestableMain(args: Array[String]): Unit = {
     if (args.length == 0) {
       throw new IllegalArgumentException("Invalid usage")
     }
