@@ -1,6 +1,6 @@
 package asso
 
-import java.io.{File, PrintWriter}
+import java.io.{File, FileNotFoundException, PrintWriter}
 
 import org.scalatest._
 
@@ -86,6 +86,16 @@ class ItSpec extends FlatSpec with Matchers {
       fail()
     } catch {
       case e: NumberFormatException => e.getMessage should include(invalidText)
+    }
+  }
+
+  "Non existing source file" should "fail" in {
+    val invalidSource = createFile() + "QQQQQQQ"
+    try {
+      Main.main(Array("pull", createFile(), createFile("2"), createFile("2"), createFile("2"), invalidSource))
+      fail()
+    } catch {
+      case e: FileNotFoundException => e.getMessage should include(invalidSource)
     }
   }
 
