@@ -15,9 +15,25 @@ object Main {
   }
 
   def testableMain(args: Array[String]): Unit = {
-    if (args.length == 0) {
-      throw new IllegalArgumentException("Invalid usage")
+    assertNotEmpty(args)
+
+    if (args(0) == "bench") {
+      runBenchmark(args.drop(1))
+    } else {
+      runCommand(args)
     }
+  }
+
+  private def runBenchmark(args: Array[String]): Unit = {
+    assertNotEmpty(args)
+
+    val numRuns = args(0).toInt
+    val commandArgs = args.drop(1)
+    Benchmarker.bench(numRuns, () => runCommand(commandArgs))
+  }
+
+  private def runCommand(args: Array[String]): Unit = {
+    assertNotEmpty(args)
 
     val command = args(0)
     val arguments = args.drop(1)
@@ -27,17 +43,16 @@ object Main {
     }
   }
 
-  def runSimplePull(arguments: Array[String]): Unit = if (arguments.length == 0) {
+  private def runSimplePull(arguments: Array[String]): Unit = if (arguments.length == 0) {
     PullJobFactory.buildConsoleJob()()
   } else if (arguments.length != 5) {
     throw new IllegalArgumentException("must specify one output file as first argument and 4 input files as subsequent arguments")
   } else {
-    val outPath = arguments(0)
-    val inPath1 = arguments(1)
-    val inPath2 = arguments(2)
-    val inPath3 = arguments(3)
-    val inPath4 = arguments(4)
-    PullJobFactory.buildAlgorithm(outPath, inPath1, inPath2, inPath3, inPath4)()
+    PullJobFactory.buildAlgorithm(arguments(0), arguments(1), arguments(2), arguments(3), arguments(4))()
+  }
+
+  private def assertNotEmpty(args: Array[String]) = if (args.length == 0) {
+    throw new IllegalArgumentException("Invalid usage")
   }
 }
 
