@@ -2,9 +2,9 @@ package asso
 
 object Main {
 
-  def Main(args: Array[String]): Unit = {
+  def main(args: Array[String]): Unit = {
     try {
-      TestableMain(args)
+      testableMain(args)
       sys.exit(0)
     } catch {
       case e: Throwable => {
@@ -14,7 +14,7 @@ object Main {
     }
   }
 
-  def TestableMain(args: Array[String]): Unit = {
+  def testableMain(args: Array[String]): Unit = {
     if (args.length == 0) {
       throw new IllegalArgumentException("Invalid usage")
     }

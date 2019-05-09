@@ -1,6 +1,6 @@
 package asso.pipes.pull.numbers
 
-import java.io.{FileInputStream, InputStream, PrintStream}
+import java.io.{FileInputStream, FileOutputStream, InputStream, PrintStream}
 import java.util.Scanner
 
 import asso.pipes.pull.{EndNode, PullPipe, SourceNode}
@@ -15,7 +15,7 @@ object ProducerConsumerFactory {
 
   def producerBuilderFromConsole(): ExecutionContext => SourceNode[Long] = ec => new LongProducer(System.in, ec)
 
-  def consumerToFile(filepath: String)(messageProducer: PullPipe[Long]):  EndNode[Long] = new LongConsumer(new PrintStream(filepath), messageProducer, AssoValues.DefaultDuration)
+  def consumerToFile(filepath: String)(messageProducer: PullPipe[Long]):  EndNode[Long] = new LongConsumer(new PrintStream(new FileOutputStream(filepath, false)), messageProducer, AssoValues.DefaultDuration)
 
   def consumerToConsole(messageProducer: PullPipe[Long]): EndNode[Long] = new LongConsumer(System.out, messageProducer, AssoValues.DefaultDuration)
 }

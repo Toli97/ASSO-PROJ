@@ -5,6 +5,9 @@ ThisBuild / version          := "0.1.0-SNAPSHOT"
 ThisBuild / organization     := "com.asso"
 ThisBuild / organizationName := "asso"
 
+Compile/mainClass := Some("asso.Main")
+mainClass in assembly := Some("asso.Main")
+
 // skip tests in assembly plugin command
 test in assembly := {}
 

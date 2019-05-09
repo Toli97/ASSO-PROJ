@@ -44,7 +44,7 @@ class ItSpec extends FlatSpec with Matchers {
     val out = createFile()
     val expectedNums = Seq(8, -1, -3) // manually calculated to be correct
 
-    Main.TestableMain(Array("pull", out, in1, in2, in3, in4))
+    Main.testableMain(Array("pull", out, in1, in2, in3, in4))
 
     val actualNums = readFileAsNums(out)
     expectedNums shouldEqual actualNums
@@ -54,7 +54,7 @@ class ItSpec extends FlatSpec with Matchers {
     val expectedNums = Seq()
 
     val out = createFile()
-    Main.TestableMain(Array("pull", out, createFile(), createFile(), createFile(), createFile()))
+    Main.testableMain(Array("pull", out, createFile(), createFile(), createFile(), createFile()))
 
     val actualNums = readFileAsNums(out)
     expectedNums shouldEqual actualNums
@@ -63,7 +63,7 @@ class ItSpec extends FlatSpec with Matchers {
   "An invalid command" should "fail" in {
     val invalidCommand = "ASDFGQWE"
     try {
-      Main.TestableMain(Array(invalidCommand))
+      Main.testableMain(Array(invalidCommand))
       fail()
     } catch {
       case e: IllegalArgumentException => e.getMessage should include(invalidCommand)
@@ -72,7 +72,7 @@ class ItSpec extends FlatSpec with Matchers {
 
   "An invalid number of commands" should "fail" in {
     try {
-      Main.TestableMain(Array("pull", createFile(), createFile()))
+      Main.testableMain(Array("pull", createFile(), createFile()))
       fail()
     } catch {
       case e: IllegalArgumentException => e.getMessage should include("must specify one output")
@@ -82,7 +82,7 @@ class ItSpec extends FlatSpec with Matchers {
   "Invalid text in a source file" should "fail" in {
     val invalidText = "awwe"
     try {
-      Main.TestableMain(Array("pull", createFile(), createFile("2"), createFile("2"), createFile("2"), createFile(invalidText)))
+      Main.testableMain(Array("pull", createFile(), createFile("2"), createFile("2"), createFile("2"), createFile(invalidText)))
       fail()
     } catch {
       case e: NumberFormatException => e.getMessage should include(invalidText)
@@ -92,7 +92,7 @@ class ItSpec extends FlatSpec with Matchers {
   "Non existing source file" should "fail" in {
     val invalidSource = createFile() + "QQQQQQQ"
     try {
-      Main.TestableMain(Array("pull", createFile(), createFile("2"), createFile("2"), createFile("2"), invalidSource))
+      Main.testableMain(Array("pull", createFile(), createFile("2"), createFile("2"), createFile("2"), invalidSource))
       fail()
     } catch {
       case e: FileNotFoundException => e.getMessage should include(invalidSource)
