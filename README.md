@@ -31,3 +31,7 @@ Slow streams are also explored such as what would happen getting the numbers fro
 - Memory used and peak memory used;
 - Extensibility;
 - Limitations.
+
+## Implementation
+
+For pipes and filters check out [here](pipes-and-filters/README.md)

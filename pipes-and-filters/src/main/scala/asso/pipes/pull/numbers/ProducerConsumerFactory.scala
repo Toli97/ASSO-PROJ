@@ -34,7 +34,6 @@ class LongProducer(private val is: InputStream, implicit private val ec: Executi
   }
 }
 
-
 class LongConsumer(private val printer: PrintStream, private val pipe: PullPipe[Long], duration: Duration) extends EndNode[Long] {
 
   private def getValue = Await.result(pipe.pull, duration)
