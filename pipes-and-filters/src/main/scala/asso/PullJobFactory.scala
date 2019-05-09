@@ -11,12 +11,19 @@ object PullJobFactory {
       .buildJob(ProducerConsumerFactory.consumerToConsole)
   }
 
-  def buildAlgorithm(outPath: String, inPath1: String, inPath2: String): () => Unit = {
-    val flow1 = PullFlowBuilder.build(ProducerConsumerFactory.producerBuilderFromFile(inPath1))
+  def buildAlgorithm(outPath: String, primeFilter: String, subFilter: String, multiplesFiltered: String, multiplesFilter: String): () => Unit = {
+    val primesFlow = PullFlowBuilder.build(ProducerConsumerFactory.producerBuilderFromFile(primeFilter))
       .withSimpleFilter(LongOperations.primeFilter)
 
-    PullFlowBuilder.build(ProducerConsumerFactory.producerBuilderFromFile(inPath2))
-      .withJoinFilter(flow1, (num1: Long, num2: Long) => Value(num1 + num2))
-      .buildJob(ProducerConsumerFactory.consumerToFile(outPath))
+    val subFlow = PullFlowBuilder.build(ProducerConsumerFactory.producerBuilderFromFile(subFilter))
+
+    val multiplesFilterFilteredFlow = PullFlowBuilder.build(ProducerConsumerFactory.producerBuilderFromFile(multiplesFiltered))
+    val multiplesFilterFlow = PullFlowBuilder.build(ProducerConsumerFactory.producerBuilderFromFile(multiplesFilter))
+    val filterFlow = multiplesFilterFilteredFlow.withJoinFilter(multiplesFilterFlow, (a, b) => LongOperations.isMultipleFilter(a, b))
+
+    val subbedFlow = subFlow.withJoinFilter(filterFlow, (a: Long, b: Long) => Value(a - b))
+
+    primesFlow.withJoinFilter(subbedFlow, (a: Long, b: Long) => Value(a + b))
+        .buildJob(ProducerConsumerFactory.consumerToFile(outPath))
   }
 }
