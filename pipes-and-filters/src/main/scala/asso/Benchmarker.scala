@@ -18,14 +18,14 @@ object Benchmarker {
       throw new IllegalArgumentException("Num run must be positive")
     }
 
-    val times = 1.to(numRuns).map(i => (i, runJob(job) / 1e6))
-    times.foreach(pair => println(s"Run ${pair._1} took: ${pair._2} ms"))
+    val times = 1.to(numRuns).map(_ => runJob(job) / 1e6)
+    val folded = times.map(time => f"$time%1.2f").mkString(", ")
+    println(s"Runs took: $folded ms")
 
-    val sorted = times.map(pair => pair._2).sorted
-    val avg = sorted.foldLeft(0.0)((acc, e) => acc + e) / sorted.size
+    val avg = times.sorted.foldLeft(0.0)((acc, e) => acc + e) / times.size
+    println(f"Run Average: $avg%1.5f ms")
 
-    println(s"Run Average: $avg ms")
-    val median = sorted(sorted.size / 2)
-    println(s"Run Median: $median ms")
+    val median = times(times.size / 2)
+    println(f"Run Median: $median%1.5f ms")
   }
 }
