@@ -30,15 +30,20 @@ class ItSpec extends FlatSpec with Matchers {
     .map(word => word.toLong)
 
 
-  "The algorithm" should "should work in a simple join flow" in {
-    val in1 = createFile("1 2 3 4")
-    val in2 = createFile("3 2 1 0")
+  "The algorithm" should "should work" in {
+    val in1 = createFile("2 3 8 4 7 10 11")
+    val in2 = createFile("10 5 5")
+    val in3 = createFile("2 4 9 12 11 15 1")
+    val in4 = createFile("3 2 3 10 2 5")
     val out = createFile()
-    val expectedNums = Seq(5, 5)
+    val expectedNums = Seq(8, -1, -3)
 
-    Main.main(Array("pull", out, in1, in2))
+    Main.main(Array("pull", out, in1, in2, in3, in4))
 
     val actualNums = readFileAsNums(out)
     expectedNums shouldEqual actualNums
   }
+
+
+
 }
