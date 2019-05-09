@@ -3,7 +3,7 @@ package asso.benchmarking
 import java.io.InputStream
 
 /**
-  *
+  * Decorator for InputStream
   * @param is
   * @param bytePeriodMs timeout between 2 consecutive bytes in milliseconds
   */
