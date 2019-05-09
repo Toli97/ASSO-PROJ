@@ -1,5 +1,8 @@
 package asso
 
+import asso.benchmarking.Benchmarker
+import asso.pipes.PullJobFactory
+
 object Main {
 
   def main(args: Array[String]): Unit = {

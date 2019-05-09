@@ -1,8 +1,7 @@
-package asso
+package asso.pipes
 
 import asso.pipes.pull.PullFlowBuilder
 import asso.pipes.pull.numbers.ProducerConsumerFactory
-import asso.pipes.{LongOperations, Value}
 
 object PullJobFactory {
   def buildConsoleJob(): () => Unit = {

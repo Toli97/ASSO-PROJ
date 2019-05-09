@@ -1,4 +1,4 @@
-package asso
+package asso.benchmarking
 
 object Benchmarker {
 

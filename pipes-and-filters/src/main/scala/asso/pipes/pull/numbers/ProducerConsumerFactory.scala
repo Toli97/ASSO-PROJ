@@ -34,6 +34,20 @@ class LongProducer(private val is: InputStream, implicit private val ec: Executi
   }
 }
 
+class SlowProducer(private val is: InputStream, implicit private val ec: ExecutionContext) extends SourceNode[Long] {
+  private val scanner = new Scanner(is)
+
+  override def produce: Future[NotNone[Long]] = Future {
+    blocking { // TODO is this correct
+      if (scanner.hasNext()) {
+        Value(scanner.next().toLong)
+      } else {
+        Eof()
+      }
+    }
+  }
+}
+
 class LongConsumer(private val printer: PrintStream, private val pipe: PullPipe[Long], duration: Duration) extends EndNode[Long] {
 
   private def getValue = Await.result(pipe.pull, duration)
