@@ -3,6 +3,7 @@ package asso.pipes.pull.numbers
 import java.io.{FileInputStream, FileOutputStream, InputStream, PrintStream}
 import java.util.Scanner
 
+import asso.benchmarking.SlowInputStream
 import asso.pipes.pull.{EndNode, PullPipe, SourceNode}
 import asso.pipes.{AssoValues, Eof, NotNone, Value}
 
@@ -13,11 +14,21 @@ import scala.util.control.Breaks._
 object ProducerConsumerFactory {
   def producerBuilderFromFile(filepath: String): ExecutionContext => SourceNode[Long] = ec => new LongProducer(new FileInputStream(filepath), ec)
 
+  def slowProducerBuilderFromFile(filepath: String, bytesPerSec: Int): ExecutionContext => SourceNode[Long] = {
+    val period = (1000 * 1.0 / bytesPerSec).toInt
+    val fs = new FileInputStream(filepath)
+    val slowIs = new SlowInputStream(fs, period)
+    ec =>
+      new LongProducer(slowIs, ec)
+  }
+
   def producerBuilderFromConsole(): ExecutionContext => SourceNode[Long] = ec => new LongProducer(System.in, ec)
 
-  def consumerToFile(filepath: String)(messageProducer: PullPipe[Long]):  EndNode[Long] = new LongConsumer(new PrintStream(new FileOutputStream(filepath, false)), messageProducer, AssoValues.DefaultDuration)
+  def consumerToFile(filepath: String): PullPipe[Long] => EndNode[Long] =
+    messageProducer => new LongConsumer(new PrintStream(new FileOutputStream(filepath, false)), messageProducer, AssoValues.DefaultDuration)
 
   def consumerToConsole(messageProducer: PullPipe[Long]): EndNode[Long] = new LongConsumer(System.out, messageProducer, AssoValues.DefaultDuration)
+
 }
 
 class LongProducer(private val is: InputStream, implicit private val ec: ExecutionContext) extends SourceNode[Long] {
@@ -52,7 +63,7 @@ class LongConsumer(private val printer: PrintStream, private val pipe: PullPipe[
 
   private def getValue = Await.result(pipe.pull, duration)
 
-  override def consumeAll() : Unit = {
+  override def consumeAll(): Unit = {
     // TODO make loop scala like
     breakable {
       while (true) {

@@ -42,6 +42,7 @@ object Main {
     val arguments = args.drop(1)
     command match {
       case "pull" => runSimplePull(arguments)
+      case "slowPull" => runSlowPull(arguments)
       case _ => throw new IllegalArgumentException(s"Invalid command: $command")
     }
   }
@@ -52,6 +53,14 @@ object Main {
     throw new IllegalArgumentException("must specify one output file as first argument and 4 input files as subsequent arguments")
   } else {
     PullJobFactory.buildAlgorithm(arguments(0), arguments(1), arguments(2), arguments(3), arguments(4))()
+  }
+
+  private def runSlowPull(arguments: Array[String]): Unit = if (arguments.length == 0) {
+    PullJobFactory.buildConsoleJob()()
+  } else if (arguments.length != 5) {
+    throw new IllegalArgumentException("must specify one output file as first argument and 4 input files as subsequent arguments")
+  } else {
+    PullJobFactory.buildSlowAlgorithm(arguments(0), arguments(1), arguments(2), arguments(3), arguments(4))()
   }
 
   private def assertNotEmpty(args: Array[String]) = if (args.length == 0) {
