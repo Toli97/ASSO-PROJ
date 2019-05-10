@@ -1,8 +1,5 @@
 package asso.model.knowledgeSources
 
-import asso.model.Blackboard
-import asso.model.objects.{ToFilterMultiples, ToFilterPrime}
-
 object FilterFactory {
 
   private def isPrime(n: Long): Boolean = {
@@ -19,11 +16,11 @@ object FilterFactory {
     return multiplesList.filter(l => n % l == 0).length == 0
   }
 
-  def buildPrimesFilter(blackboard: Blackboard[Long]): ConditionFilter[Long] = {
-    return new ConditionFilter[Long](blackboard, ToFilterPrime(), isPrime)
+  def buildPrimesFilter(): ConditionFilter[Long] = {
+    return new ConditionFilter[Long](isPrime)
   }
 
-  def buildMultiplesFilter(blackboard: Blackboard[Long]): ConditionFilter[Long] = {
-    return new ConditionFilter[Long](blackboard, ToFilterMultiples(), isNotMultiple)
+  def buildMultiplesFilter(): ConditionFilter[Long] = {
+    return new ConditionFilter[Long](isNotMultiple)
   }
 }

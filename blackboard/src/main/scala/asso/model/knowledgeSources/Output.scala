@@ -1,37 +1,47 @@
 package asso.model.knowledgeSources
 
 import java.io.PrintStream
-
-import asso.model.Blackboard
-import asso.model.objects.{Eof, Message, ToOutput, Value}
 import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.concurrent.LinkedBlockingQueue
 
-import scala.concurrent.Future
+import asso.model.Blackboard
+import asso.model.objects.{Eof, Message, Value}
 
-case class Output[I](blackboard: Blackboard[I]) extends KnowledgeSource(blackboard = blackboard) {
-  val stage = ToOutput()
+case class Output[I]() extends KnowledgeSource[I]() {
   val fileName: String = new SimpleDateFormat("yyyyMMddHHmm'.txt'").format(new Date())
   val printStream = new PrintStream(fileName)
 
-  override def isEnabled(): Boolean = !blackboard.isQueueEmpty(stage)
+  val nextMessages = new LinkedBlockingQueue[Message[I]]();
+  var receivedEof = false
 
-  override def execute(): Future[Unit] = Future {
-    println("Executing Output Filter")
-    keepGoing = true
-    while (isEnabled && keepGoing) {
-      val objectToWrite: Message[I] = blackboard.pollFromQueue(stage)
-      objectToWrite match {
-        case Value(value1, _) => printStream.println(value1.toString())
-        case Eof(_) => stop()
+  // If i'm receiving updates to fast it might not process all the messages
+  // I need a queue to put the resolved messages
+  override def receiveUpdate(message: Message[I]): Unit = {
+    println("Output received message")
+    nextMessages.put(message);
+  }
+
+  override def execute() =  {
+    println("Output waiting for message in queue")
+    val message: Message[I] = nextMessages.take();
+    message.setState(nextState)
+    blackboard.addToQueue(message)
+    message match {
+      case Value(value1) => {
+        printStream.println(value1.toString())
       }
-      objectToWrite.advanceStage()
-      blackboard.addToQueue(objectToWrite)
+      case Eof() => {
+        println("Output Finished")
+        receivedEof = true
+      }
     }
   }
 
-  override def stop(): Unit = {
-    super.stop()
-    printStream.close()
+  override def configure(blackboard: Blackboard[I]): Unit = {
+    this.blackboard = blackboard
+    blackboard.addObserver(this, myState)
   }
+
+  override def isEnabled: Boolean = !receivedEof
 }

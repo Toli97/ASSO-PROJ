@@ -1,24 +1,34 @@
 package asso.model.knowledgeSources.generators
-
 import asso.model.Blackboard
-import asso.model.objects.{Value, ProcessingStage}
+import asso.model.objects.{Eof, Message, Value}
 
-import scala.concurrent.Future
 import scala.util.Random
 
-case class RandomGenerator(blackboard: Blackboard[Long], chain: Vector[ProcessingStage]) extends Generator(blackboard, chain) {
+case class RandomGenerator() extends Generator[Long]() {
 
   var counter = 10000;
 
-  override def isEnabled: Boolean = counter > 0
+  def isEnabled: Boolean = counter > 0
   val randomGenerator = new Random()
 
-  override def execute() = Future {
-    keepGoing = true
-    while(isEnabled && keepGoing) {
-      val rnd = randomGenerator.nextInt()
-      blackboard.addToQueue(new Value(rnd, chain))
+  override def execute() = {
+    if(counter > 0) {
+      val rnd = randomGenerator.nextLong()
+      val newMessage = new Value(rnd)
+      newMessage.setState(nextState)
+      blackboard.addToQueue(newMessage)
       counter-=1
+    } else if (counter == 0) {
+      val newMessage = new Eof[Long]()
+      newMessage.setState(nextState)
+      blackboard.addToQueue(newMessage)
     }
+
+  }
+
+  override def receiveUpdate(message: Message[Long])= {}
+
+  override def configure(blackboard: Blackboard[Long]): Unit = {
+    this.blackboard = blackboard
   }
 }
