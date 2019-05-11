@@ -2,8 +2,7 @@ package asso.pipes.push
 
 import asso.pipes.{Eof, Message, Optional, Value}
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 trait MessageProducer[A] {
   def produce: Future[Message[A]]
@@ -15,16 +14,16 @@ trait EndNode[A] {
   def consumeAll(): Unit
 }
 
-class SimpleFilter[In, Out](private val source: PushPipe[In], private val operation: In => Optional[Out]) extends MessageProducer[Out] {
+class SimpleFilter[In, Out](private val source: PushPipe[In], private val operation: In => Optional[Out], implicit private val ec: ExecutionContext) extends MessageProducer[Out] {
 
-  override def produce: Future[Message[Out]] = for {opt <- source.push}
+  override def produce: Future[Message[Out]] =  for {opt <- source.push}
     yield opt match {
       case Value(value) => operation(value)
       case Eof() => Eof()
     }
 }
 
-class JoinFilter[In1, In2, Out](private val source1: PushPipe[In1], private val source2: PushPipe[In2], private val operation: (In1, In2) => Optional[Out]) extends MessageProducer[Out] {
+class JoinFilter[In1, In2, Out](private val source1: PushPipe[In1], private val source2: PushPipe[In2], private val operation: (In1, In2) => Optional[Out], implicit private val ec: ExecutionContext) extends MessageProducer[Out] {
 
   override def produce: Future[Message[Out]] = {
     // separate for parallelism
