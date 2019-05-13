@@ -1,5 +1,5 @@
 ### Generate an integer sequence
-### CLI: python generate.py <sequence_name> <file_path> <num_numbers>
+### CLI: python merge.py <input_path_1> <input_path_2> <output_path>
 
 import sys
 from random import shuffle
