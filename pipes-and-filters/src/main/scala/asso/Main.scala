@@ -2,6 +2,7 @@ package asso
 
 import asso.benchmarking.Benchmarker
 import asso.pipes.PullJobFactory
+import asso.pipes.PushJobFactory
 
 object Main {
 
