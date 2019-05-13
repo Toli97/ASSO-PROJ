@@ -1,6 +1,5 @@
 package asso.model.knowledgeSources.generators
 
-import asso.model.Blackboard
 import asso.model.objects.{Eof, Message, Value}
 
 case class FibonacciGenerator() extends Generator[Long] {
@@ -11,21 +10,21 @@ case class FibonacciGenerator() extends Generator[Long] {
 
   def isEnabled: Boolean = counter <= numbersToGenerate
 
-  override def execute() = {
+  override def execute() {
     println("Fibonacci counter: " + counter)
     if (counter < numbersToGenerate) {
       var nextLong: Long = 0
       if (counter > 1) nextLong = last + lastButOne
       else if (counter == 1) nextLong = 1
       val newMessage = new Value(nextLong)
-      newMessage.setState(nextState)
+      newMessage.setTopic(nextTopic)
       blackboard.addToQueue(newMessage)
       lastButOne = last
       last = nextLong
     }
     else if (counter >= numbersToGenerate) {
       val newMessage = new Eof[Long]()
-      newMessage.setState(nextState)
+      newMessage.setTopic(nextTopic)
       blackboard.addToQueue(newMessage)
       println("Fibonacci Generator Finished")
     }
@@ -34,8 +33,4 @@ case class FibonacciGenerator() extends Generator[Long] {
   }
 
   override def receiveUpdate(message: Message[Long]) {}
-
-  override def configure(blackboard: Blackboard[Long]): Unit = {
-    this.blackboard = blackboard
-  }
 }

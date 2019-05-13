@@ -1,18 +1,18 @@
 package asso.model.objects
 
 
-abstract class Message[I]() {
-  private var currentState: Int = 0
+abstract class Message[T]() {
+  private var topic: Int = 0
 
-  def getCurrentState(): Int = {
-    return currentState
+  def currentTopic: Int = {
+    return topic
   }
 
-  def setState(nextState: Int) = currentState = nextState
+  def setTopic(nextTopic: Int) = topic = nextTopic
 }
 
-case class Value[I](var value: I) extends Message[I]
+case class Value[T](var value: T) extends Message[T]
 
-case class Eof[I]() extends Message[I]()
+case class Eof[T]() extends Message[T]()
 
 

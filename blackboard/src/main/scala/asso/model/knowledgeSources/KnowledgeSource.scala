@@ -4,44 +4,63 @@ import asso.model.Blackboard
 import asso.model.objects.Message
 
 import scala.collection.mutable
+import scala.collection.mutable.ListBuffer
 import scala.concurrent.ExecutionContext
 
-trait Observer[I] {
-  def receiveUpdate(message: Message[I]);
+trait Observer[T] {
+  def receiveUpdate(message: Message[T]);
 }
 
-trait Subject[I] {
-  private val observers: mutable.HashMap[Int, Observer[I]] = mutable.HashMap.empty;
-  def addObserver(observer: Observer[I], state: Int) = {
-    observers.put(state, observer)
+trait Subject[T] {
+  private val observers: mutable.HashMap[Int, ListBuffer[Observer[T]]] = mutable.HashMap.empty;
+  def addObserver(observer: Observer[T], topic: Int) = {
+    if (observers.get(topic).isEmpty) {
+      observers.put(topic, new ListBuffer[Observer[T]]());
+    }
+    observers.get(topic).get += observer
   };
 
-  def notifyObservers(message: Message[I]) = {
-    observers.get(message.getCurrentState()).foreach((o) => {
-      o.receiveUpdate(message)
-    })
+  def notifyObservers(message: Message[T]) = {
+    if (!observers.get(message.currentTopic).isEmpty) {
+      observers.get(message.currentTopic).get.foreach((o) => {
+        o.receiveUpdate(message)
+      })
+    }
   }
 }
 
 
-trait KnowledgeSource[I] extends Observer[I]{
+trait KnowledgeSource[T] extends Observer[T]{
 
-  var blackboard: Blackboard[I] = _
-  var myState: Int = KnowledgeSource.getCounter
-  var nextState: Int = _
+  var blackboard: Blackboard[T] = _
+  var topics: mutable.HashMap[Int, mutable.Queue[Message[T]]] = mutable.HashMap.empty
+  var nextTopic: Int = KnowledgeSource.getCounter
 
   implicit val ec: ExecutionContext = ExecutionContext.global
 
   def execute()
 
-  def configure(blackboard: Blackboard[I])
+  def receiveUpdate(message: Message[T]): Unit = {
+    println("Condition Filter received message")
+    topics.get(message.currentTopic).get.enqueue(message)
+  }
 
-  def chain(knowledgeSource: KnowledgeSource[I]) = {
-    nextState = knowledgeSource.myState;
+  def allQueuesHaveMessages = topics.filter((keyVal) => keyVal._2.isEmpty).size == 0
+
+  def chain(knowledgeSource: KnowledgeSource[T]) = {
+    knowledgeSource.addTopic(nextTopic)
+  }
+
+  def addTopic(topic: Int): Unit = {
+    topics.put(topic, mutable.Queue.empty)
+  }
+
+  def configure(blackboard: Blackboard[T]): Unit = {
+    this.blackboard = blackboard
+    topics.keySet.foreach(topic => blackboard.addObserver(this, topic))
   }
 
   def isEnabled: Boolean
-
 }
 
 object KnowledgeSource {
