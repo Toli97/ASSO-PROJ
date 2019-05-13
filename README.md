@@ -21,7 +21,13 @@ We will use 4 inputs for numbers which will be sourced from a certain file. The 
 
 Slow streams are also explored such as what would happen getting the numbers from a slow TCP stream, which we will simulate using a file and sleep.
 
-![Pipes and filters](https://i.imgur.com/3IsUexE.png)
+Scenario 1 (unlimited file speed):
+
+![Scenario 1](https://i.imgur.com/3IsUexE.png)
+
+Scenario 2 (file reading speed limited):
+
+![Scenario 2](https://i.imgur.com/BAmL4m8.png)
 
 ### Benchmarks Analysed
 
