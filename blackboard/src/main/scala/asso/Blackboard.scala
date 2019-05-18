@@ -1,7 +1,7 @@
-package asso.model
+package asso
 
-import asso.model.knowledgeSources.Subject
-import asso.model.objects.Message
+import asso.knowledgeSources.Subject
+import asso.objects.Message
 
 class Blackboard[T] extends Subject[T]{
 

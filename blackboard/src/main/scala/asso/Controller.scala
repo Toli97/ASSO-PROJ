@@ -1,6 +1,6 @@
-package asso.model
+package asso
 
-import asso.model.knowledgeSources.KnowledgeSource
+import asso.knowledgeSources.KnowledgeSource
 
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.ExecutionContext

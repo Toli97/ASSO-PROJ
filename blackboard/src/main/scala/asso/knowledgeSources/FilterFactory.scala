@@ -1,4 +1,4 @@
-package asso.model.knowledgeSources
+package asso.knowledgeSources
 
 object FilterFactory {
 

@@ -1,7 +1,7 @@
-package asso.model.knowledgeSources
+package asso.knowledgeSources
 
-import asso.model.Blackboard
-import asso.model.objects.Message
+import asso.Blackboard
+import asso.objects.Message
 
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
