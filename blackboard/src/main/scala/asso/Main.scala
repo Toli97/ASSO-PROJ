@@ -1,5 +1,6 @@
 package asso
 
+import asso.benchmark.Benchmarker
 import asso.knowledgeSources.{FilterFactory, OperationFactory, OutputFactory, ProducerFactory}
 
 object Main extends App {
@@ -7,10 +8,11 @@ object Main extends App {
   override def main(args: Array[String]): Unit = {
     val blackboard = new Blackboard[Long]()
     val controller = new Controller[Long](blackboard)
-    scenario1(controller, blackboard)
+    //scenario1(controller, blackboard)
     //simpleScenario(controller, blackboard)
     //testJoinFilter(controller, blackboard)
     //testOperationFilter(controller, blackboard)
+    Benchmarker.bench(100, () => simpleScenario(controller, blackboard))
   }
 
   def simpleScenario(controller: Controller[Long], blackboard: Blackboard[Long]) = {
