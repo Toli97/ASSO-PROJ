@@ -6,25 +6,20 @@ import java.util.Date
 
 import asso.model.objects.{Eof, Message, Value}
 
-import scala.collection.mutable
-
 case class Output[T]() extends KnowledgeSource[T]() {
   val fileName: String = new SimpleDateFormat("yyyyMMddHHmm'.txt'").format(new Date())
   val printStream = new PrintStream(fileName)
-
-  val messagesQueue = new mutable.Queue[Message[T]]();
-  var receivedEof = false
 
   // If i'm receiving updates to fast it might not process all the messages
   // T need a queue to put the resolved messages
   override def receiveUpdate(message: Message[T]): Unit = {
     println("Output received message")
-    messagesQueue.enqueue(message);
+    messagesQueue1.enqueue(message);
   }
 
   override def execute() {
-    if (!messagesQueue.isEmpty){
-      val message: Message[T] = messagesQueue.dequeue();
+    if (haveMessages()){
+      val message: Message[T] = messagesQueue1.dequeue();
       message.setTopic(nextTopic)
       blackboard.addToQueue(message)
       message match {
@@ -38,6 +33,4 @@ case class Output[T]() extends KnowledgeSource[T]() {
       }
     }
   }
-
-  override def isEnabled: Boolean = !receivedEof
 }

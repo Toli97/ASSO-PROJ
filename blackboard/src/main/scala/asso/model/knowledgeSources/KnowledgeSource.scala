@@ -32,8 +32,10 @@ trait Subject[T] {
 
 trait KnowledgeSource[T] extends Observer[T]{
 
+  var receivedEof = false
   var blackboard: Blackboard[T] = _
-  var topics: mutable.HashMap[Int, mutable.Queue[Message[T]]] = mutable.HashMap.empty
+  var topic1: Int = 0
+  val messagesQueue1: mutable.Queue[Message[T]] = mutable.Queue[Message[T]]();
   var nextTopic: Int = KnowledgeSource.getCounter
 
   implicit val ec: ExecutionContext = ExecutionContext.global
@@ -41,26 +43,25 @@ trait KnowledgeSource[T] extends Observer[T]{
   def execute()
 
   def receiveUpdate(message: Message[T]): Unit = {
-    println("Condition Filter received message")
-    topics.get(message.currentTopic).get.enqueue(message)
+    messagesQueue1.enqueue(message)
   }
 
-  def allQueuesHaveMessages = topics.filter((keyVal) => keyVal._2.isEmpty).size == 0
+  def haveMessages() = messagesQueue1.nonEmpty
 
-  def chain(knowledgeSource: KnowledgeSource[T]) = {
-    knowledgeSource.addTopic(nextTopic)
+  def chain(knowledgeSource: KnowledgeSource[T]): KnowledgeSource[T] = {
+    knowledgeSource.setTopic(nextTopic)
+    return knowledgeSource
   }
 
-  def addTopic(topic: Int): Unit = {
-    topics.put(topic, mutable.Queue.empty)
+  def setTopic(topic: Int): Unit = {
+    blackboard.addObserver(this, topic)
   }
 
   def configure(blackboard: Blackboard[T]): Unit = {
     this.blackboard = blackboard
-    topics.keySet.foreach(topic => blackboard.addObserver(this, topic))
   }
 
-  def isEnabled: Boolean
+  def isEnabled: Boolean = !receivedEof
 }
 
 object KnowledgeSource {

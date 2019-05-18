@@ -6,12 +6,28 @@ import scala.collection.mutable
 
 case class JoinFilter[T](operation: (T, T) => T) extends KnowledgeSource[T] {
 
-  var receivedEof = false
-  val messagesQueue1 = new mutable.Queue[Message[T]]();
-  val messagesQueue2 = new mutable.Queue[Message[T]]();
+  val messagesQueue2 = mutable.Queue[Message[T]]();
+
+  override def receiveUpdate(message: Message[T]): Unit = {
+    if (message.currentTopic == topic1) {
+      messagesQueue1.enqueue(message)
+    } else {
+      messagesQueue2.enqueue(message)
+    }
+  }
+
+  override def haveMessages(): Boolean = messagesQueue1.nonEmpty && messagesQueue2.nonEmpty
+
+  override def setTopic(topic: Int): Unit = {
+    super.setTopic(topic)
+    if (topic1 == 0) {
+      topic1 = topic
+    }
+  }
+
 
   override def execute() {
-    if (!messagesQueue1.isEmpty && !messagesQueue2.isEmpty) {
+    if (haveMessages()) {
       val message1 = messagesQueue1.dequeue();
       val message2 = messagesQueue2.dequeue();
       message1.setTopic(nextTopic)
@@ -38,5 +54,4 @@ case class JoinFilter[T](operation: (T, T) => T) extends KnowledgeSource[T] {
     }
   }
 
-  override def isEnabled: Boolean = !receivedEof
 }

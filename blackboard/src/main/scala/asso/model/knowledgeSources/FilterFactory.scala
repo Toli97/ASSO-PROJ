@@ -23,4 +23,8 @@ object FilterFactory {
   def buildMultiplesFilter(): ConditionFilter[Long] = {
     return new ConditionFilter[Long](isNotMultiple)
   }
+
+  def buildJoinMultiplesFilter(): JoinConditionFilter[Long] = {
+    return new JoinConditionFilter[Long](isNotMultiple)
+  }
 }

@@ -17,13 +17,12 @@ class Controller[I](blackboard: Blackboard[I]) {
 
   def addKnowledgeSources(list: List[KnowledgeSource[I]]) = {
     knowledgeSources = knowledgeSources ++ list
+    list.foreach(ks => ks.configure(blackboard))
   }
 
   def execute() = {
     println("Executing controller")
-    knowledgeSources.foreach((k) => {
-      k.configure(blackboard)
-    })
+
     while(knowledgeSources.nonEmpty) {
       knowledgeSources = knowledgeSources.filter(k => k.isEnabled)
       knowledgeSources.foreach(k => {

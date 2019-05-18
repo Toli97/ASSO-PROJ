@@ -1,14 +1,12 @@
 package asso.model.knowledgeSources.generators
 
-import asso.model.objects.{Eof, Message, Value}
+import asso.model.objects.{Eof, Value}
 
 case class FibonacciGenerator() extends Generator[Long] {
   val numbersToGenerate = 70
   var counter = 0
   var last: Long = 0
   var lastButOne: Long = 0
-
-  def isEnabled: Boolean = counter <= numbersToGenerate
 
   override def execute() {
     println("Fibonacci counter: " + counter)
@@ -27,10 +25,9 @@ case class FibonacciGenerator() extends Generator[Long] {
       newMessage.setTopic(nextTopic)
       blackboard.addToQueue(newMessage)
       println("Fibonacci Generator Finished")
+      receivedEof = true
     }
     counter += 1
 
   }
-
-  override def receiveUpdate(message: Message[Long]) {}
 }

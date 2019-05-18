@@ -2,7 +2,10 @@ package asso.model.knowledgeSources
 
 import asso.model.objects.{Eof, Value}
 
-case class ConditionFilter[T](val condition: (T) => Boolean) extends KnowledgeSource[T] {
+case class JoinConditionFilter[T](val condition: (T) => Boolean) extends KnowledgeSource[T] {
+
+  // needs to receive 2 EOF to terminate
+  var receivedFirstEof = false;
 
   override def execute() {
     if (haveMessages()){
@@ -18,12 +21,20 @@ case class ConditionFilter[T](val condition: (T) => Boolean) extends KnowledgeSo
           }
         }
         case Eof() => {
-          blackboard.addToQueue(message);
-          println("Condition Filter Finished")
-          receivedEof = true;
+          if (receivedFirstEof) {
+            receivedEof = true
+            blackboard.addToQueue(message)
+            println("Condition Filter Finished")
+          }
+          receivedFirstEof = true
         }
       }
     }
-
   }
+
+  override def setTopic(topic: Int): Unit = {
+    blackboard.addObserver(this, topic)
+  }
+
+
 }
