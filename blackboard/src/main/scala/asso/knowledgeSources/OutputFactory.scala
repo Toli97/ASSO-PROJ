@@ -2,7 +2,7 @@ package asso.knowledgeSources
 
 import java.io.{FileOutputStream, PrintStream}
 
-import asso.objects.{Eof, Message, Value}
+import asso.message.{Eof, Message, Value}
 
 object OutputFactory {
   def toFile(filePath: String) = {
@@ -25,6 +25,7 @@ case class Output[T](private val printStream: PrintStream) extends KnowledgeSour
         case Eof(_) => {
           println("Output Finished")
           receivedEof = true
+          printStream.close()
         }
       }
     }

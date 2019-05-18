@@ -4,7 +4,7 @@ import java.io.{FileInputStream, InputStream}
 import java.util.Scanner
 
 import asso.benchmarking.SlowInputStream
-import asso.objects.{Eof, Value}
+import asso.message.{Eof, Value}
 
 object ProducerFactory {
   def fromFile(filePath: String) = new LongProducer(new FileInputStream((filePath)))

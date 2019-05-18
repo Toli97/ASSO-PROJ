@@ -1,10 +1,15 @@
 package asso.knowledgeSources
-
-import asso.objects.{Eof, Message, Value}
+import asso.message.{Eof, Message, Value}
 
 import scala.collection.mutable
+object OperationFactory {
 
-case class JoinFilter[T](operation: (T, T) => T) extends KnowledgeSource[T] {
+  def buildAdd() = new OperationFilter[Long]((a,b) => a + b)
+  def buildSub() = new OperationFilter[Long]((a,b) => a - b)
+}
+
+
+case class OperationFilter[T](operation: (T, T) => T) extends KnowledgeSource[T] {
 
   val messagesQueue2 = mutable.Queue[Message[T]]();
 
@@ -19,7 +24,7 @@ case class JoinFilter[T](operation: (T, T) => T) extends KnowledgeSource[T] {
   override def haveMessages(): Boolean = messagesQueue1.nonEmpty && messagesQueue2.nonEmpty
 
   override def setTopic(topic: Int): Unit = {
-    super.setTopic(topic)
+    blackboard.addObserver(this, topic)
     if (topic1 == 0) {
       topic1 = topic
     }
@@ -40,12 +45,14 @@ case class JoinFilter[T](operation: (T, T) => T) extends KnowledgeSource[T] {
               blackboard.addToQueue(newMessage)
             }
             case Eof(_) => {
+              println("Operation Filter finished")
               receivedEof = true
               blackboard.addToQueue(message2)
             }
           }
         }
         case Eof(_) => {
+          println("Operation Filter finished")
           receivedEof = true
           blackboard.addToQueue(message1)
         }

@@ -1,7 +1,7 @@
 package asso.knowledgeSources
 
 import asso.Blackboard
-import asso.objects.Message
+import asso.message.Message
 
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
@@ -65,7 +65,7 @@ trait KnowledgeSource[T] extends Observer[T]{
 }
 
 object KnowledgeSource {
-  private var counter = 0
+  private var counter = 1
   def getCounter: Int = this.synchronized{
     counter += 1
     return counter - 1

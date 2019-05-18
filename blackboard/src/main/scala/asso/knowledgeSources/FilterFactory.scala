@@ -5,8 +5,10 @@ object FilterFactory {
   private def isPrime(n: Long): Boolean = {
     if (n < 2) return false
     val ceil: Long = Math.floor(Math.sqrt(n)).asInstanceOf[Long]
-    for (i <- 2L to ceil) {
+    var i: Long = 2L;
+    while (i < ceil) {
       if (n % i == 0) return false
+      i+=1
     }
     return true
   }

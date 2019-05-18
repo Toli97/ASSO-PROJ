@@ -1,6 +1,6 @@
 package asso
 
-import asso.knowledgeSources.{FilterFactory, JoinFilter, OutputFactory, ProducerFactory}
+import asso.knowledgeSources.{FilterFactory, OperationFactory, OutputFactory, ProducerFactory}
 
 object Main extends App {
 
@@ -10,10 +10,11 @@ object Main extends App {
     scenario1(controller, blackboard)
     //simpleScenario(controller, blackboard)
     //testJoinFilter(controller, blackboard)
+    //testOperationFilter(controller, blackboard)
   }
 
   def simpleScenario(controller: Controller[Long], blackboard: Blackboard[Long]) = {
-    val generator = ProducerFactory.fromFile("fibonacci.in")
+    val generator = ProducerFactory.fromFile("fib.in")
     val filter = FilterFactory.buildMultiplesFilter()
     val output = OutputFactory.toFile("simpleScenario.out")
     val ksList = List(generator, filter, output)
@@ -24,8 +25,8 @@ object Main extends App {
     println("Simple scenario finished")
   }
 
-  def testJoinFilter(controller: Controller[Long], blackboard: Blackboard[Long]) = {
-    val generator1 = ProducerFactory.fromFile("fibonacci.in")
+  def testJoinMultiplesFilter(controller: Controller[Long], blackboard: Blackboard[Long]) = {
+    val generator1 = ProducerFactory.fromFile("fib.in")
     val generator2 = ProducerFactory.fromFile("rand1.in")
     val filter = FilterFactory.buildJoinMultiplesFilter()
     val output = OutputFactory.toFile("testJoinFilter.out")
@@ -37,20 +38,34 @@ object Main extends App {
     println("Test Join filter finished")
   }
 
+  def testOperationFilter(controller: Controller[Long], blackboard: Blackboard[Long]) = {
+    val rand1 = ProducerFactory.fromFile("smallRand1.in")
+    val rand2 = ProducerFactory.fromFile("smallRand2.in")
+    val add = OperationFactory.buildAdd()
+    val sink = OutputFactory.toFile("testOperationFilter.out")
+    val kss = List(rand1,rand2,add,sink)
+    controller.addKnowledgeSources(kss)
+    rand1.chain(add)
+    rand2.chain(add).chain(sink)
+    controller.execute()
+    println("Test Operation filter finished")
+  }
+
   def scenario1(controller: Controller[Long], blackboard: Blackboard[Long]): Unit = {
-    val fibGen = ProducerFactory.fromFile("fibonacci.in")
+    val fibGen = ProducerFactory.fromFile("fib.in")
     val randGen1 = ProducerFactory.fromFile("rand1.in")
     val randGen2 = ProducerFactory.fromFile("rand2.in")
     val randGen3 = ProducerFactory.fromFile("rand3.in")
     val multFilter = FilterFactory.buildMultiplesFilter()
-    val primeFilter = FilterFactory.buildMultiplesFilter()
+    val primeFilter = FilterFactory.buildPrimesFilter()
     val joinMultFilter = FilterFactory.buildJoinMultiplesFilter()
-    val sub = new JoinFilter[Long]((a, b) => a - b)
-    val add = new JoinFilter[Long]((a, b) => a + b)
-    val kss = List(fibGen, randGen1, randGen2, randGen3, multFilter, primeFilter, joinMultFilter, sub, add)
+    val sub = OperationFactory.buildSub()
+    val add = OperationFactory.buildAdd()
+    val sink = OutputFactory.toFile("scenario1.out")
+    val kss = List(fibGen, randGen1, randGen2, randGen3, multFilter, primeFilter, joinMultFilter, sub, add, sink)
     controller.addKnowledgeSources(kss)
 
-    fibGen.chain(multFilter).chain(primeFilter).chain(add)
+    fibGen.chain(multFilter).chain(primeFilter).chain(add).chain(sink)
     randGen1.chain(sub).chain(add)
     randGen2.chain(joinMultFilter).chain(sub)
     randGen3.chain(joinMultFilter)

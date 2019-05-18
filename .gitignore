@@ -2,3 +2,5 @@ target
 releases
 .idea
 files
+*.in
+*.out
