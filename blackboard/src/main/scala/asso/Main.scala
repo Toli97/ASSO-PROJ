@@ -13,8 +13,8 @@ object Main extends App {
     //testJoinFilter(controller, blackboard)
     //testOperationFilter(controller, blackboard)
     //Benchmarker.bench(100, () => simpleScenario(controller, blackboard))
-    //Benchmarker.bench(10, () => scenario1(controller, blackboard))
-    Benchmarker.bench(3, () => scenario2(controller, blackboard))
+    Benchmarker.bench(10, () => scenario1(controller, blackboard))
+    //Benchmarker.bench(3, () => scenario2(controller, blackboard))
   }
 
   def simpleScenario(controller: Controller[Long], blackboard: Blackboard[Long]) = {
