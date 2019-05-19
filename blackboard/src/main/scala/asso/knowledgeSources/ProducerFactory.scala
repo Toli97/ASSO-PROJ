@@ -29,6 +29,7 @@ case class LongProducer(is: InputStream) extends KnowledgeSource[Long] {
       val msg = new Eof[Long](nextTopic)
       blackboard.addToQueue(msg)
       receivedEof = true
+      println("Producer finished")
     }
   }
 }

@@ -12,7 +12,9 @@ object Main extends App {
     //simpleScenario(controller, blackboard)
     //testJoinFilter(controller, blackboard)
     //testOperationFilter(controller, blackboard)
-    Benchmarker.bench(100, () => simpleScenario(controller, blackboard))
+    //Benchmarker.bench(100, () => simpleScenario(controller, blackboard))
+    //Benchmarker.bench(10, () => scenario1(controller, blackboard))
+    Benchmarker.bench(3, () => scenario2(controller, blackboard))
   }
 
   def simpleScenario(controller: Controller[Long], blackboard: Blackboard[Long]) = {
@@ -73,7 +75,30 @@ object Main extends App {
     randGen3.chain(joinMultFilter)
 
     controller.execute()
-    println("Finished test")
+    println("Finished scenario 1")
+  }
+
+  def scenario2(controller: Controller[Long], blackboard: Blackboard[Long]) = {
+    val fibGen = ProducerFactory.slowFromFile("fib.in", 100)
+    val randGen1 = ProducerFactory.fromFile("smallRand1.in")
+    val randGen2 = ProducerFactory.slowFromFile("smallRand2.in", 200)
+    val randGen3 = ProducerFactory.fromFile("smallRand1.in")
+    val multFilter = FilterFactory.buildMultiplesFilter()
+    val primeFilter = FilterFactory.buildPrimesFilter()
+    val joinMultFilter = FilterFactory.buildJoinMultiplesFilter()
+    val sub = OperationFactory.buildSub()
+    val add = OperationFactory.buildAdd()
+    val sink = OutputFactory.toFile("scenario2.out")
+    val kss = List(fibGen, randGen1, randGen2, randGen3, multFilter, primeFilter, joinMultFilter, sub, add, sink)
+    controller.addKnowledgeSources(kss)
+
+    fibGen.chain(multFilter).chain(primeFilter).chain(add).chain(sink)
+    randGen1.chain(sub).chain(add)
+    randGen2.chain(joinMultFilter).chain(sub)
+    randGen3.chain(joinMultFilter)
+
+    controller.execute()
+    println("Finished scenario 2")
   }
 
 }
