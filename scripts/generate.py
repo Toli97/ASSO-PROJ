@@ -16,6 +16,8 @@ def run_sequence(sequence_generator):
 
     for i in range(num_numbers):
         val = sequence_generator(i)
+        if (val > INT_LIMIT):
+            continue
         file.write("%d\n" % val)
 
     file.close()
@@ -25,7 +27,7 @@ def run_sequence(sequence_generator):
 def fibbonaci(n):
     return ((1+sqrt(5))**n-(1-sqrt(5))**n)/(2**n*sqrt(5))
 
-    def random_seq(n):
+def random_seq(n):
     return randint(-INT_LIMIT, INT_LIMIT) ## max 8 byte int
 
 sequence_name = sys.argv[1]
