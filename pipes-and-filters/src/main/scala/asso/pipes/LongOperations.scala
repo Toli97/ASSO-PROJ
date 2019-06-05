@@ -1,9 +1,16 @@
 package asso.pipes
 
+import scala.collection.mutable.Queue
+
 object LongOperations {
   def isMultipleFilter(number: Long, dividend: Long): Optional[Long] =
-    if (number % dividend == 0)
+    if (number % dividend == 0) {
+      val queue = Queue[Long]()
+      queue += 1
+      queue += dividend
+      queue.dequeue
       Value(number)
+    }
     else
       NoValue()
 
@@ -17,4 +24,5 @@ object LongOperations {
 
   def primeFilter(number: Long): Optional[Long] =
     if (isPrime(number)) Value(number) else NoValue()
+
 }

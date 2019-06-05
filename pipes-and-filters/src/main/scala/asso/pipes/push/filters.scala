@@ -16,11 +16,16 @@ trait EndNode[A] {
 
 class SimpleFilter[In, Out](private val source: PushPipe[In], private val operation: In => Optional[Out], implicit private val ec: ExecutionContext) extends MessageProducer[Out] {
 
-  override def produce: Future[Message[Out]] =  for {opt <- source.push}
-    yield opt match {
-      case Value(value) => operation(value)
-      case Eof() => Eof()
-    }
+  override def produce: Future[Message[Out]] = {
+    for {opt <- source.push}
+      yield opt match {
+        case Value(value) => {
+          println("val ", value)
+          operation(value)
+        }
+        case Eof() => Eof()
+      }
+  }
 }
 
 class JoinFilter[In1, In2, Out](private val source1: PushPipe[In1], private val source2: PushPipe[In2], private val operation: (In1, In2) => Optional[Out], implicit private val ec: ExecutionContext) extends MessageProducer[Out] {
@@ -38,5 +43,16 @@ class JoinFilter[In1, In2, Out](private val source1: PushPipe[In1], private val 
       case (_, Eof()) => Eof()
       case (Value(val1), Value(val2)) => operation(val1, val2)
     }
+  }
+}
+
+class QueueFilter[In, Out](private val source: PushPipe[In], private val operation: In => Optional[Out], implicit private val ec: ExecutionContext) extends MessageProducer[Out] {
+
+  override def produce: Future[Message[Out]] = {
+    for {opt <- source.push}
+      yield opt match {
+        case Value(value) => operation(value)
+        case Eof() => Eof()
+      }
   }
 }
