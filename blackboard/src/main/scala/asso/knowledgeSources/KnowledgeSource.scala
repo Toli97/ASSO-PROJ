@@ -49,11 +49,11 @@ trait KnowledgeSource[T] extends Observer[T]{
   def haveMessages() = messagesQueue1.nonEmpty
 
   def chain(knowledgeSource: KnowledgeSource[T]): KnowledgeSource[T] = {
-    knowledgeSource.setTopic(nextTopic)
+    knowledgeSource.subscribeTopic(nextTopic)
     return knowledgeSource
   }
 
-  def setTopic(topic: Int): Unit = {
+  def subscribeTopic(topic: Int): Unit = {
     blackboard.addObserver(this, topic)
   }
 

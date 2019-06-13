@@ -23,7 +23,7 @@ case class OperationFilter[T](operation: (T, T) => T) extends KnowledgeSource[T]
 
   override def haveMessages(): Boolean = messagesQueue1.nonEmpty && messagesQueue2.nonEmpty
 
-  override def setTopic(topic: Int): Unit = {
+  override def subscribeTopic(topic: Int): Unit = {
     blackboard.addObserver(this, topic)
     if (topic1 == 0) {
       topic1 = topic
