@@ -33,6 +33,7 @@ object FilterFactory {
   }
 }
 
+// Filters messages using a condition function which should return true if the message should be forwarded, false otherwise.
 case class ConditionFilter[T](val condition: (T) => Boolean) extends KnowledgeSource[T] {
 
   override def execute() {
@@ -57,7 +58,7 @@ case class ConditionFilter[T](val condition: (T) => Boolean) extends KnowledgeSo
   }
 }
 
-
+// Filters messages from multiple topics. Finishes only when 2 EOFs are received.
 case class JoinConditionFilter[T](val condition: (T) => Boolean) extends KnowledgeSource[T] {
 
   // needs to receive 2 EOF to terminate
@@ -83,10 +84,6 @@ case class JoinConditionFilter[T](val condition: (T) => Boolean) extends Knowled
         }
       }
     }
-  }
-
-  override def setTopic(topic: Int): Unit = {
-    blackboard.addObserver(this, topic)
   }
 
 
