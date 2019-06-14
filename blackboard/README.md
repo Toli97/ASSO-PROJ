@@ -2,8 +2,6 @@
 
 Project to implement the algorithm with Blackboard
 
-![Blackboard](https://i.imgur.com/7PTReP2.png)
-
 ## Instructions
 
 You need to have `sbt` installed to run these steps
@@ -39,16 +37,16 @@ About 500
 
 ### Speed Benchmarks
 #### Scenario 1 (100 runs)
-- Run Average: 5,57 ms
-- Run Median: 3.79 ms
-- First Run: 160 ms
-- Second Run: 22 ms
+- Run Average: 4,30 ms
+- Run Median: 2,03 ms
+- First Run: 106 ms
+- Second Run: 20 ms
 
 #### Scenario 2 (20 runs, fibonacci numbers at 1000B/s and prime numbers at 2000B/s)
-- Run Average - 1193 ms
-- Run Median: 1191 ms
-- First Run: 1253 ms
-- Second Run: 1196 ms
+- Run Average - 1172 ms
+- Run Median: 1176 ms
+- First Run: 1240 ms
+- Second Run: 1137 ms
 
 #### Scenario 2 (20 runs, fibonacci numbers at 1000B/s and prime numbers at 1000B/s)
 - Run Average - 10754 ms
@@ -56,7 +54,7 @@ About 500
 - First Run: 10877 ms
 - Second Run: 10826 ms
 
-Clearly there is a blocking problem due to prime numbers being read too slow.
+Clearly there is a blocking problem caused by slow inputs.
 
 ### Code Profiling
 
@@ -86,6 +84,9 @@ Given the problem described [here](https://github.com/Toliveira97/ASSO-PROJ#prob
 - The Controller usually orders and executes Knowledge Sources by priority. How to create a priority when the scenarios may vary? Do we set the priority on the creation of a Knowledge Source? Is a priority needed at all? If a priority is not needed, is the Controller doing anything useful? How do we know that all Knowledge Sources finished processing?
 - What if more than one Knowledge Source should process the same Message. When does a Message get removed from the Blackboard queue?
 - If the Messages should go through a well-defined process, how do we say that they have been processed and they are ready to be processed by the next filter? Should the Messages "path" be defined on Message instantiation? Should each Knowledge Source know what is the "next" state of each Message it processes? Or should each Knowledge Source have a reference to the next Knowledge Sources?
+- Each Knowledge Source receives on creation the "state" to which it should transform the messages it receives, as an Enumeration. Having these "states" as enumeration does not scale very well with new types of Knowledge Sources and does not provide an easy API for the user.
+
+![Blackboard-step1](https://i.imgur.com/w0l6LI9.png)
 
 ### Step 2:
 - The Blackboard seems very similar to a Broker, but instead of proxying the Messages it only saves them. What if we convert this Blackboard into a Broker? The problem of having multiple Knowledge Sources fetching the same Message could be solved by using the Observer Pattern (notify each Knowledge source that is subscribed to that Message).
@@ -97,14 +98,17 @@ Given the problem described [here](https://github.com/Toliveira97/ASSO-PROJ#prob
 - When a Knowledge Source executes and has no stored Messages, how should it behave? Block and wait for a Message to be received? If it blocks then Knowledge Sources have to execute in separate threads. How long should it wait for a Message to be received?
 - What if when there are no stored Messages, the Knowledge Source returns from the execute method? Maybe there is no need for parallel execution of the Knowledge Sources.
 - How does the Controller know that a Knowledge Source has finished execution? What if each Knowledge Source has a public method that the Controller can use to know if it has finished? A Knowledge Source could internally change its state to Finished when it receives an End-Of-File Message. Upon receiving an End-Of-File, each Knowledge Source should forward that Message so that the following Knowledge Sources know that no more Messages will be coming through that "channel".
-- The Controller execute method can be reduced to a simple for loop which iterates through all Knowledge Sources and removes them from its list when they are finished while there are knowledge sources. We could also use an Observer Pattern here so that each Knowledge Source would notify the Controller upon finishing execution.
+- The Controller execute method can be reduced to a simple for loop which iterates through all Knowledge Sources and removes them from its list when they are finished while there are Knowledge Sources. We could also use an Observer Pattern here so that each Knowledge Source would notify the Controller upon finishing execution.
 - In a scenario where there's a join of two branches, for example in an add operation, receiving an EOF from one of the branches should halt the execution on the other branch. 
-If we want the controller to handle this, then it needs to be aware of what chains exist. Another approach would be for each knowledge source to subscribe on the next knowledge source end of execution.
+If we want the controller to handle this, then it needs to be aware of what chains exist. Another approach would be for each Knowledge Source to subscribe on the next Knowledge Source end of execution.
 ### FINAL SOLUTION
 
+
+![Blackboard Final Solution](https://i.imgur.com/GgFEz5u.png)
+
 #### Controller
-- Has a method addKnowledgeSources that sets the blackboard on all knowledge sources.
-- The method execute has a for loop that removes knowledge sources that have finished already and iterates on each Knowledge Source, calls the execute and waits for the execute to finish before processing the next Knowledge Source.
+- Has a method addKnowledgeSources that sets the blackboard on all Knowledge Sources.
+- The method execute has a for loop that removes Knowledge Sources that have finished already and iterates on each Knowledge Source, calls the execute and waits for the execute to finish before processing the next Knowledge Source.
 
 #### Message
 - Can either be instantiated as a Value or as an EOF. Each message has a Topic which can be updated in run-time by the Knowledge Sources.
@@ -125,7 +129,7 @@ There are multiple types:
 - Each Knowledge Source, on instantiation, receives the topic of the messages that it produces.
 - Knowledge Sources can be chained only after receiving the blackboard. 
 The chain method uses the blackboard to subscribe the correct topic.
-- Knowledge Sources are observers and subjects of themselves. Each knowledge source subscribes to be notified of the end of execution of the chained knowledge sources.
+- Knowledge Sources are observers and subjects of themselves. Each Knowledge Source subscribes to be notified of the end of execution of the chained Knowledge Sources.
 This subscription is done when the chain method is called.
 
 ### Possible future work

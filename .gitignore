@@ -4,3 +4,4 @@ releases
 files
 *.in
 *.out
+run.sh
