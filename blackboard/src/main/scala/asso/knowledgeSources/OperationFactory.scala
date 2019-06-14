@@ -12,6 +12,7 @@ object OperationFactory {
 case class OperationFilter[T](operation: (T, T) => T) extends KnowledgeSource[T] {
 
   val messagesQueue2 = mutable.Queue[Message[T]]();
+  var topic1: Int = 0
 
   override def receiveUpdate(message: Message[T]): Unit = {
     if (message.currentTopic == topic1) {
@@ -48,6 +49,7 @@ case class OperationFilter[T](operation: (T, T) => T) extends KnowledgeSource[T]
               println("Operation Filter finished")
               receivedEof = true
               blackboard.addToQueue(message2)
+              notifyEndOfExecutionSubscribers()
             }
           }
         }
@@ -55,6 +57,7 @@ case class OperationFilter[T](operation: (T, T) => T) extends KnowledgeSource[T]
           println("Operation Filter finished")
           receivedEof = true
           blackboard.addToQueue(message1)
+          notifyEndOfExecutionSubscribers()
         }
       }
     }

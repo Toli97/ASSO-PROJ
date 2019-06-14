@@ -34,9 +34,9 @@ trait KnowledgeSource[T] extends Observer[T]{
 
   var receivedEof = false
   var blackboard: Blackboard[T] = _
-  var topic1: Int = 0
   val messagesQueue1: mutable.Queue[Message[T]] = mutable.Queue[Message[T]]();
   var nextTopic: Int = KnowledgeSource.getCounter
+  var endOfExecutionSubscribers: ListBuffer[KnowledgeSource[T]] = ListBuffer();
 
   implicit val ec: ExecutionContext = ExecutionContext.global
 
@@ -50,6 +50,7 @@ trait KnowledgeSource[T] extends Observer[T]{
 
   def chain(knowledgeSource: KnowledgeSource[T]): KnowledgeSource[T] = {
     knowledgeSource.subscribeTopic(nextTopic)
+    knowledgeSource.subscribeOnEndOfExecution(this)
     return knowledgeSource
   }
 
@@ -61,7 +62,21 @@ trait KnowledgeSource[T] extends Observer[T]{
     this.blackboard = blackboard
   }
 
+  def subscribeOnEndOfExecution(ks: KnowledgeSource[T]): Unit = {
+    endOfExecutionSubscribers += ks
+  }
+
+  def notifyEndOfExecutionSubscribers(): Unit = {
+    endOfExecutionSubscribers.toList.foreach(ks => ks.receiveEndOfExecutionNotification() )
+  }
+
+  def receiveEndOfExecutionNotification(): Unit = {
+    this.receivedEof = true
+    notifyEndOfExecutionSubscribers()
+  }
+
   def isEnabled: Boolean = !receivedEof
+
 }
 
 object KnowledgeSource {

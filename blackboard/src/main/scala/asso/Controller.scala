@@ -15,12 +15,17 @@ class Controller[I](blackboard: Blackboard[I]) {
   var knowledgeSources: ListBuffer[KnowledgeSource[I]] = ListBuffer.empty
 
 
+  /**
+    * Knowledge Sources need to be added to the controller to receive the blackboard
+    * This needs to be done before chaining knowledge sources
+    * @param list A list of the knowledge sources that will execute
+    */
   def addKnowledgeSources(list: List[KnowledgeSource[I]]) = {
     knowledgeSources = knowledgeSources ++ list
     list.foreach(ks => ks.configure(blackboard))
   }
 
-  def execute() = {
+  def execute(): Unit = {
     println("Executing controller")
 
     while(knowledgeSources.nonEmpty) {
