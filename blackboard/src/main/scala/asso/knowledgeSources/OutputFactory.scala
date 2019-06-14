@@ -6,6 +6,7 @@ import asso.message.{Eof, Message, Value}
 
 object OutputFactory {
   def toFile(filePath: String) = {
+    println("Output file: " + filePath)
     new Output[Long](new PrintStream(new FileOutputStream(filePath, false)));
   }
 }
