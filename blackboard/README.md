@@ -31,11 +31,32 @@ You need to have `sbt` installed to run these steps
 
 ## Benchmarks
 
-### Hours to Implement - About 20h
+### Hours Coding
+About 20h
 
-### Number of lines of code - About 530
+### Number of lines of code
+About 500
 
 ### Speed Benchmarks
+#### Scenario 1 (100 runs)
+- Run Average: 5,57 ms
+- Run Median: 3.79 ms
+- First Run: 160 ms
+- Second Run: 22 ms
+
+#### Scenario 2 (20 runs, fibonacci numbers at 1000B/s and prime numbers at 2000B/s)
+- Run Average - 1193 ms
+- Run Median: 1191 ms
+- First Run: 1253 ms
+- Second Run: 1196 ms
+
+#### Scenario 2 (20 runs, fibonacci numbers at 1000B/s and prime numbers at 1000B/s)
+- Run Average - 10754 ms
+- Run Median: 10802 ms
+- First Run: 10877 ms
+- Second Run: 10826 ms
+
+Clearly there is a blocking problem due to prime numbers being read too slow.
 
 ### Code Profiling
 
@@ -76,8 +97,9 @@ Given the problem described [here](https://github.com/Toliveira97/ASSO-PROJ#prob
 - When a Knowledge Source executes and has no stored Messages, how should it behave? Block and wait for a Message to be received? If it blocks then Knowledge Sources have to execute in separate threads. How long should it wait for a Message to be received?
 - What if when there are no stored Messages, the Knowledge Source returns from the execute method? Maybe there is no need for parallel execution of the Knowledge Sources.
 - How does the Controller know that a Knowledge Source has finished execution? What if each Knowledge Source has a public method that the Controller can use to know if it has finished? A Knowledge Source could internally change its state to Finished when it receives an End-Of-File Message. Upon receiving an End-Of-File, each Knowledge Source should forward that Message so that the following Knowledge Sources know that no more Messages will be coming through that "channel".
-- The Controller can be reduced to a simple for loop which iterates through all Knowledge Sources and removes them from its list when they are finished. We could also use an Observer Pattern here so that each Knowledge Source would notify the Controller upon finishing execution.
-
+- The Controller execute method can be reduced to a simple for loop which iterates through all Knowledge Sources and removes them from its list when they are finished while there are knowledge sources. We could also use an Observer Pattern here so that each Knowledge Source would notify the Controller upon finishing execution.
+- In a scenario where there's a join of two branches, for example in an add operation, receiving an EOF from one of the branches should halt the execution on the other branch. 
+If we want the controller to handle this, then it needs to be aware of what chains exist. Another approach would be for each knowledge source to subscribe on the next knowledge source end of execution.
 ### FINAL SOLUTION
 
 #### Controller
@@ -101,4 +123,13 @@ There are multiple types:
 5. LongProducer - Reads long numbers from text file, either as fast as possible or with a given rate (bytes/sec) to simulate low input rate;
 
 - Each Knowledge Source, on instantiation, receives the topic of the messages that it produces.
-- Knowledge Sources can be chained. The chain method subscribes the knowledge sources to the correct topic.
+- Knowledge Sources can be chained only after receiving the blackboard. 
+The chain method uses the blackboard to subscribe the correct topic.
+- Knowledge Sources are observers and subjects of themselves. Each knowledge source subscribes to be notified of the end of execution of the chained knowledge sources.
+This subscription is done when the chain method is called.
+
+### Possible future work
+
+1. Make Knowledge Sources asynchronous, so that scenarios (like 2) where there are slow Knowledge Sources can run faster. 
+Furthermore, making Knowledge Sources asynchronous would enable a migration to a distributed architecture.
+2. Create a priority mechanism on Knowledge Sources so that services that the user estimates to take longer time to execute can run more frequently.
