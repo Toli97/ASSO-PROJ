@@ -1,0 +1,7 @@
+target
+releases
+.idea
+files
+*.in
+*.out
+run.sh
