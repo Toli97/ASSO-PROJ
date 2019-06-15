@@ -60,12 +60,16 @@ Clearly there is a blocking problem caused by slow inputs.
 
 #### Scenario 1
 ![Scenario 1 profiling](https://i.imgur.com/1RB7u5e.png)
+
 In scenario 1 72.8% of the CPU time is used executing the Knowledge Sources.
+
 The knowledge sources that take the most CPU time are the Long Producers, which take 33.9% of it.
 
 ### Scenario 2
 ![Scenario 2 profiling](https://i.imgur.com/9JQLmJW.png)
+
 In scenario 2 we simulate slow inputs. We can see that less that 50% of the CPU time is actually used executing the Knowledge Sources.
+
 In the image above we can see that Long Producers take the biggest amount of CPU time, totaling 43.4%. This is caused by using blocking IO functions and the program being single threaded. 
 ## Architecture Discussion
 
