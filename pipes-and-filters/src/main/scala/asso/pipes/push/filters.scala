@@ -44,13 +44,9 @@ class JoinFilter[In1, In2, Out](private val source1: PushPipe[In1], private val 
       opt2 <- fut2
     } yield (opt1, opt2) match {
       case (Eof(), _) => {
-        println("que3: ", queue1)
-        println("que444: ", queue2)
         Eof()
       }
       case (_, Eof()) => {
-        println("que333: ", queue1)
-        println("que4: ", queue2)
         Eof()
       }
       case (Value(val1), Value(val2)) => {
@@ -59,16 +55,5 @@ class JoinFilter[In1, In2, Out](private val source1: PushPipe[In1], private val 
         operation(val1, val2)
       }
     }
-  }
-}
-
-class QueueFilter[In, Out](private val source: PushPipe[In], private val operation: In => Optional[Out], implicit private val ec: ExecutionContext) extends MessageProducer[Out] {
-
-  override def produce: Future[Message[Out]] = {
-    for {opt <- source.push}
-      yield opt match {
-        case Value(value) => operation(value)
-        case Eof() => Eof()
-      }
   }
 }

@@ -44,4 +44,5 @@ Scenario 2 (file reading speed limited):
 
 ## Implementation
 
-For pipes and filters check out [here](pipes-and-filters/README.md)
+For pipes and filters check out [here](pipes-and-filters/README.md)   
+For blackboard check out [here](blackboard/README.md)
