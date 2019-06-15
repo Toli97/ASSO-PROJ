@@ -6,18 +6,6 @@ Project to implement the algorithm with Blackboard
 
 You need to have `sbt` installed to run these steps
 
-#### Building 
-    
-    sbt compile
-    
-#### Test
-
-    sbt test
-
-### Run
-
-    sbt run
-
 #### Package (Fat JAR)
 
     sbt assembly
@@ -30,10 +18,10 @@ You need to have `sbt` installed to run these steps
 ## Benchmarks
 
 ### Hours Coding
-About 20h
+About 25h
 
 ### Number of lines of code
-About 500
+About 600
 
 ### Speed Benchmarks
 #### Scenario 1 (100 runs)
