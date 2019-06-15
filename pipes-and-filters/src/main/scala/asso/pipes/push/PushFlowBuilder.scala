@@ -2,7 +2,7 @@ package asso.pipes.push
 
 import asso.pipes.{AssoValues, Optional}
 import scala.concurrent.ExecutionContext
-
+import scala.collection.mutable.Queue
 
 class PushFlowBuilder[In] private (private val source: MessageProducer[In], private val ec: ExecutionContext) {
 
@@ -10,14 +10,17 @@ class PushFlowBuilder[In] private (private val source: MessageProducer[In], priv
 
   def withSimpleFilter[Out](operation: In => Optional[Out]): PushFlowBuilder[Out] = {
     val pipe = sourcePipe
-    val filter = new SimpleFilter(pipe, operation, ec)
+    val queue = Queue[In]()
+    val filter = new SimpleFilter(pipe, operation, ec, queue)
     new PushFlowBuilder(filter, ec)
   }
 
   def withJoinFilter[In2, Out](pushFlowBuilder: PushFlowBuilder[In2], operation: (In, In2) => Optional[Out]) : PushFlowBuilder[Out] = {
     val pipe1 = sourcePipe
     val pipe2 = new PushPipe(pushFlowBuilder.source, AssoValues.DefaultDuration)
-    val filter = new JoinFilter(pipe1, pipe2, operation, ec)
+    val queue1 = Queue[In]()
+    val queue2 = Queue[In2]()
+    val filter = new JoinFilter(pipe1, pipe2, operation, ec, queue1, queue2)
     new PushFlowBuilder[Out](filter, ec)
   }
 

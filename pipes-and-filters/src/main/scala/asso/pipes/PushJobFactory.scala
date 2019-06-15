@@ -8,7 +8,9 @@ import scala.concurrent.ExecutionContext
 object PushJobFactory {
   def buildConsoleJob(): () => Unit = {
     PushFlowBuilder.build(ProducerConsumerFactory.producerBuilderFromConsole())
-      .withSimpleFilter(num => LongOperations.isMultipleFilter(num, 2))
+      .withSimpleFilter(num => {
+        LongOperations.isMultipleFilter(num, 2)
+      })
       .buildJob(ProducerConsumerFactory.consumerToConsole)
   }
 

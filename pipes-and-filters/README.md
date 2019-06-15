@@ -48,22 +48,10 @@ Example:
 
 ### Speed Benchmarks
 #### Scenario 1 (100 runs)
-- Run Average: 
-- Run Median: 
-- First Run: 
-- Second Run: 
-
-#### Scenario 2 (20 runs, fibonacci numbers at 1000B/s and prime numbers at 2000B/s)
-- Run Average - 
-- Run Median: 
-- First Run: 
-- Second Run: 
-
-#### Scenario 2 (20 runs, fibonacci numbers at 1000B/s and prime numbers at 1000B/s)
-- Run Average - 
-- Run Median: 
-- First Run: 
-- Second Run: 
+- Run Average: 116 ms
+- Run Median: 112 ms
+- First Run: 161 ms
+- Second Run: 114 ms 
 
 ### Code Profiling
 

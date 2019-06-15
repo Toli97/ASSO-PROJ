@@ -14,14 +14,6 @@ import scala.util.control.Breaks._
 object ProducerConsumerFactory {
   def producerBuilderFromFile(filepath: String): ExecutionContext => SourceNode[Long] = ec => new LongProducer(new FileInputStream(filepath), ec)
 
-  def slowProducerBuilderFromFile(filepath: String, bytesPerSec: Int): ExecutionContext => SourceNode[Long] = {
-    val period = (1000 * 1.0 / bytesPerSec).toInt
-    val fs = new FileInputStream(filepath)
-    val slowIs = new SlowInputStream(fs, period)
-    ec =>
-      new LongProducer(slowIs, ec)
-  }
-
   def producerBuilderFromConsole(): ExecutionContext => SourceNode[Long] = ec => new LongProducer(System.in, ec)
 
   def consumerToFile(filepath: String): PushPipe[Long] => EndNode[Long] =
@@ -32,20 +24,6 @@ object ProducerConsumerFactory {
 }
 
 class LongProducer(private val is: InputStream, implicit private val ec: ExecutionContext) extends SourceNode[Long] {
-  private val scanner = new Scanner(is)
-
-  override def produce: Future[NotNone[Long]] = Future {
-    blocking { // TODO is this correct
-      if (scanner.hasNext()) {
-        Value(scanner.next().toLong)
-      } else {
-        Eof()
-      }
-    }
-  }
-}
-
-class SlowProducer(private val is: InputStream, implicit private val ec: ExecutionContext) extends SourceNode[Long] {
   private val scanner = new Scanner(is)
 
   override def produce: Future[NotNone[Long]] = Future {
