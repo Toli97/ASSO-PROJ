@@ -12,7 +12,7 @@ object PullJobFactory {
       .buildJob(ProducerConsumerFactory.consumerToConsole)
   }
 
-  def buildAlgorithm(outPath: String, primeFilter: String, subFilter: String, multiplesFiltered: String, multiplesFilter: String): () => Unit = {
+  def buildScenario1(outPath: String, primeFilter: String, subFilter: String, multiplesFiltered: String, multiplesFilter: String): () => Unit = {
     val primeSource = ProducerConsumerFactory.producerBuilderFromFile(primeFilter)
     val subSource = ProducerConsumerFactory.producerBuilderFromFile(subFilter)
     val filteredSource = ProducerConsumerFactory.producerBuilderFromFile(multiplesFiltered)
@@ -22,13 +22,23 @@ object PullJobFactory {
     buildAlgorithm(primeSource, subSource, filteredSource, filerSource, outEndpoint)
   }
 
-  def buildSlowAlgorithm(outPath: String, primeFilter: String, subFilter: String, multiplesFiltered: String, multiplesFilter: String): () => Unit = {
-    val byterate = 10
+  def buildScenario2(outPath: String, primeFilter: String, subFilter: String, multiplesFiltered: String, multiplesFilter: String): () => Unit = {
 
-    val primeSource = ProducerConsumerFactory.producerBuilderFromFile(primeFilter)
-    val subSource = ProducerConsumerFactory.slowProducerBuilderFromFile(subFilter, byterate)
-    val filteredSource = ProducerConsumerFactory.producerBuilderFromFile(multiplesFiltered)
-    val filerSource = ProducerConsumerFactory.slowProducerBuilderFromFile(multiplesFilter, byterate)
+    val primeSource = ProducerConsumerFactory.slowProducerBuilderFromFile(primeFilter, 1000)
+    val subSource = ProducerConsumerFactory.producerBuilderFromFile(subFilter)
+    val filteredSource = ProducerConsumerFactory.slowProducerBuilderFromFile(multiplesFiltered, 2000)
+    val filerSource = ProducerConsumerFactory.producerBuilderFromFile(multiplesFilter)
+    val outEndpoint = ProducerConsumerFactory.consumerToFile(outPath)
+
+    buildAlgorithm(primeSource, subSource, filteredSource, filerSource, outEndpoint)
+  }
+
+  def buildScenario3(outPath: String, primeFilter: String, subFilter: String, multiplesFiltered: String, multiplesFilter: String): () => Unit = {
+
+    val primeSource = ProducerConsumerFactory.slowProducerBuilderFromFile(primeFilter, 1000)
+    val subSource = ProducerConsumerFactory.producerBuilderFromFile(subFilter)
+    val filteredSource = ProducerConsumerFactory.slowProducerBuilderFromFile(multiplesFiltered, 1000)
+    val filerSource = ProducerConsumerFactory.producerBuilderFromFile(multiplesFilter)
     val outEndpoint = ProducerConsumerFactory.consumerToFile(outPath)
 
     buildAlgorithm(primeSource, subSource, filteredSource, filerSource, outEndpoint)
