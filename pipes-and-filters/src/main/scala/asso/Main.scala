@@ -8,11 +8,11 @@ object Main {
   def main(args: Array[String]): Unit = {
     try {
       testableMain(args)
-      sys.exit(0)
+      // sys.exit(0)
     } catch {
       case e: Throwable => {
         System.err.println(e.getMessage)
-        sys.exit(1)
+        // sys.exit(1)
       }
     }
   }
