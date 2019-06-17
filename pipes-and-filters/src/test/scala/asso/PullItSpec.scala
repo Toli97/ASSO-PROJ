@@ -41,21 +41,21 @@ class ItSpec extends FlatSpec with Matchers {
   private val ValidFilter = "3 2 3 10 2 5"
   private val ValidOutputSeq = Seq(8, -1, -2) // manually calculated to be correct
 
-  "The algorithm" should "should work" in {
+  "The algorithm" should "work" in {
     val out = createFile()
     Main.testableMain(Array("pull", out, createFile(ValidPrimes), createFile(ValidSubs), createFile(ValidFiltered), createFile(ValidFilter)))
     val actualNums = readFileAsNums(out)
     ValidOutputSeq shouldEqual actualNums
   }
 
-  "The algorithm benchmark" should "should work" in {
+  "The algorithm benchmark" should "work" in {
     val out = createFile()
     Main.testableMain(Array("bench", "3", "pull", out, createFile(ValidPrimes), createFile(ValidSubs), createFile(ValidFiltered), createFile(ValidFilter)))
     val actualNums = readFileAsNums(out)
     ValidOutputSeq shouldEqual actualNums
   }
 
-  "The algorithm with empty inputs" should "should produce empty output" in {
+  "The algorithm with empty inputs" should "produce empty output" in {
     val expectedNums = Seq()
 
     val out = createFile()

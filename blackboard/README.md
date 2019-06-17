@@ -14,36 +14,6 @@ You need to have `sbt` installed to run these steps
 
     java -jar target/scala-*/Blackboard*.jar
 
-
-## Benchmarks
-
-### Hours Coding
-About 25h
-
-### Number of lines of code
-About 600
-
-### Speed Benchmarks
-#### Scenario 1 (100 runs)
-- Run Average: 4,30 ms
-- Run Median: 2,03 ms
-- First Run: 106 ms
-- Second Run: 20 ms
-
-#### Scenario 2 (20 runs, fibonacci numbers at 1000B/s and prime numbers at 2000B/s)
-- Run Average - 1172 ms
-- Run Median: 1176 ms
-- First Run: 1240 ms
-- Second Run: 1137 ms
-
-#### Scenario 2 (20 runs, fibonacci numbers at 1000B/s and prime numbers at 1000B/s)
-- Run Average - 10754 ms
-- Run Median: 10802 ms
-- First Run: 10877 ms
-- Second Run: 10826 ms
-
-Clearly there is a blocking problem caused by slow inputs.
-
 ### Code Profiling
 
 #### Scenario 1
@@ -132,6 +102,15 @@ There are multiple types:
 The chain method uses the blackboard to subscribe the correct topic.
 - Knowledge Sources are observers and subjects of themselves. Each Knowledge Source subscribes to be notified of the end of execution of the chained Knowledge Sources.
 This subscription is done when the chain method is called.
+
+### Extensibility
+- One can add Knowledge Sources with new functionality just by extending the class KnowledgeSource.
+- In spite of the fact that we only tested the architecture with numbers, it can easily be extended to support string processing. 
+
+### Limitations
+- It is not possible for a KnowledgeSource to have multiple outputs.
+- In a given scenario, a message can only contain objects of one type. So, if we want to a have scenario in which we process strings and numbers, a wrapper needs to be created for them.
+- The order of adding Knowledge Sources to the Controller matters and may lead to deadlocks. This can be solved by assigning priorities to each Knowledge Source execution.
 
 ### Possible future work
 
