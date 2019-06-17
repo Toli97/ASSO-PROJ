@@ -76,4 +76,3 @@ object Main {
     throw new IllegalArgumentException("Invalid usage")
   }
 }
-
