@@ -39,7 +39,7 @@ class ItSpec extends FlatSpec with Matchers {
   private val ValidSubs = "10 5 5"
   private val ValidFiltered = "2 4 9 12 11 15 1"
   private val ValidFilter = "3 2 3 10 2 5"
-  private val ValidOutputSeq = Seq(8, -1, -3) // manually calculated to be correct
+  private val ValidOutputSeq = Seq(8, -1, -2) // manually calculated to be correct
 
   "The algorithm" should "work" in {
     val out = createFile()

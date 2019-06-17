@@ -2,18 +2,17 @@ package asso
 
 import asso.benchmarking.Benchmarker
 import asso.pipes.PullJobFactory
-import asso.pipes.PushJobFactory
 
 object Main {
 
   def main(args: Array[String]): Unit = {
     try {
       testableMain(args)
-      sys.exit(0)
+      // sys.exit(0)
     } catch {
       case e: Throwable => {
         System.err.println(e.getMessage)
-        sys.exit(1)
+        // sys.exit(1)
       }
     }
   }
@@ -44,7 +43,7 @@ object Main {
     command match {
       case "pull" => runSimplePull(arguments)
       case "slowPull" => runSlowPull(arguments)
-      case "push" => runPush(arguments)
+      case "slowPull2" => runSlowPull2(arguments)
       case _ => throw new IllegalArgumentException(s"Invalid command: $command")
     }
   }
@@ -54,7 +53,7 @@ object Main {
   } else if (arguments.length != 5) {
     throw new IllegalArgumentException("must specify one output file as first argument and 4 input files as subsequent arguments")
   } else {
-    PullJobFactory.buildAlgorithm(arguments(0), arguments(1), arguments(2), arguments(3), arguments(4))()
+    PullJobFactory.buildScenario1(arguments(0), arguments(1), arguments(2), arguments(3), arguments(4))()
   }
 
   private def runSlowPull(arguments: Array[String]): Unit = if (arguments.length == 0) {
@@ -62,15 +61,15 @@ object Main {
   } else if (arguments.length != 5) {
     throw new IllegalArgumentException("must specify one output file as first argument and 4 input files as subsequent arguments")
   } else {
-    PullJobFactory.buildSlowAlgorithm(arguments(0), arguments(1), arguments(2), arguments(3), arguments(4))()
+    PullJobFactory.buildScenario2(arguments(0), arguments(1), arguments(2), arguments(3), arguments(4))()
   }
 
-  private def runPush(arguments: Array[String]): Unit = if (arguments.length == 0) {
-    PushJobFactory.buildConsoleJob()()
+  private def runSlowPull2(arguments: Array[String]): Unit = if (arguments.length == 0) {
+    PullJobFactory.buildConsoleJob()()
   } else if (arguments.length != 5) {
     throw new IllegalArgumentException("must specify one output file as first argument and 4 input files as subsequent arguments")
   } else {
-    PushJobFactory.buildAlgorithm(arguments(0), arguments(1), arguments(2), arguments(3), arguments(4))()
+    PullJobFactory.buildScenario3(arguments(0), arguments(1), arguments(2), arguments(3), arguments(4))()
   }
 
   private def assertNotEmpty(args: Array[String]) = if (args.length == 0) {
