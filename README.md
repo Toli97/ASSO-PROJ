@@ -42,6 +42,7 @@ Slow streams are also explored such as what would happen getting the numbers fro
 These benchmarks are based on 4 input files (which you can find in the Releases in github).
 
 All the implementations assume the input files contain integer numbers with a maximum of 8-byte integers.
+The total number of runs are chosen in the input.
 
 There are 3 scenarios defined:
 
@@ -49,12 +50,32 @@ There are 3 scenarios defined:
 - Scenario 2: Same as scenario 1 but with a slow file for the 1st input (1000 Bytes/sec) and 3rd input (2000 Bytes/sec)
 - Scenario 3: Same as scenario 1 but with a slow file for the 1st input (1000 Bytes/sec) and 3rd input (1000 Bytes/sec)
 
+### Diagrams
+
+Blackboard - Scenario 1
+![Scenario1-BB](https://i.imgur.com/T1yIqFa.gif)
+
+Pipes and filters - Scenario 1
+![Scenario1-PP](https://i.imgur.com/IflxqhN.gif)
+
+Blackboard - Scenario 2
+![Scenario2-BB](https://i.imgur.com/76lhgIK.gif)
+
+Pipes and filters - Scenario 2
+![Scenario2-PP](https://i.imgur.com/DFC7K74.gif)
+
+Blackboard - Scenario 3
+![Scenario3-BB](https://i.imgur.com/yLwTqcN.gif)
+
+The first few executions are affected by the JVM JIT compiler and are therefore a lot slower than subsequent runs.
+
 **Averages:**
 
 |Implementation | Scenario 1 | Scenario 2 | Scenario 3 |
 | ------------------------ |:--------------------:|:----------------------:|:----------------:|
 | Blackboard               | 4,30 ms     | 1172 ms       | 10754 ms |
 | Pipes-and-filters  | 942,87 ms | 2407,89 ms | Too long |
+| Total number of runs  | 100 | 20 | 20 |
 
 **Medians:**
 
@@ -62,6 +83,23 @@ There are 3 scenarios defined:
 | ------------------------ |:--------------------:|:----------------------:|:----------------:|
 | Blackboard               | 2,03 ms     | 1176 ms       | 10802 ms |
 | Pipes-and-filters | 778,81 ms | 2252,51 ms | Too long |
+| Total number of runs | 100 | 20 | 20 |
+
+**Highs:**
+
+|Implementation | Scenario 1 | Scenario 2 | Scenario 3 |
+| ------------------------ |:--------------------:|:----------------------:|:----------------:|
+| Blackboard               | 101,59 ms     | 1296,19 ms       | 10780,36 ms |
+| Pipes-and-filters | 1583,46 ms | 2844,46 ms | Too long |
+| Total number of runs | 100 | 20 | 20 |
+
+**Lows:**
+
+|Implementation | Scenario 1 | Scenario 2 | Scenario 3 |
+| ------------------------ |:--------------------:|:----------------------:|:----------------:|
+| Blackboard               | 1,61 ms     | 1118,45 ms       | 10238,03 ms |
+| Pipes-and-filters | 766,28 ms | 2176,99 ms | Too long |
+| Total number of runs | 100 | 20 | 20 |
 
 From the data we can see the slow inputs cause a blocking problem.
 
